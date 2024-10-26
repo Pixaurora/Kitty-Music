@@ -22,7 +22,7 @@ public class ScrobblerSetup<T extends Scrobbler> implements Closeable {
 
     private String run() {
         try {
-            return this.server.runServer();
+            return this.server.run();
         } catch (IOException e) {
             throw new RuntimeException("Couldn't finish running server!", e);
         }

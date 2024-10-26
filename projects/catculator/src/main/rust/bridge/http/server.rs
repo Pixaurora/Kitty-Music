@@ -1,4 +1,7 @@
-use crate::Result;
+use crate::{
+    bridge::{drop_box, pack_box, pull_box},
+    Result,
+};
 
 use jni::{
     objects::{JClass, JObject, JString},
@@ -7,20 +10,10 @@ use jni::{
 };
 use tokio::runtime::Runtime;
 
-use crate::{bridge::get_pointer, http::server::Server};
+use crate::http::server::Server;
 
-fn create<'local>() -> jlong {
-    let server = Server::new();
-
-    Box::into_raw(Box::from(server)) as jlong
-}
-
-fn run_server<'local>(
-    object: &JObject<'local>,
-    env: &mut JNIEnv<'local>,
-) -> Result<JString<'local>> {
-    let pointer = get_pointer(env, object)?;
-    let server = unsafe { &mut *(pointer as *mut Server) };
+fn run_server<'r>(object: &JObject<'r>, env: &mut JNIEnv<'r>) -> Result<JString<'r>> {
+    let server = pull_box::<Server>(env, object)?;
 
     let runtime = Runtime::new()?;
     let token = runtime.block_on(server.run_server(&runtime))?;
@@ -28,42 +21,33 @@ fn run_server<'local>(
     Ok(env.new_string(token)?)
 }
 
-fn drop<'local>(object: &JObject<'local>, env: &mut JNIEnv<'local>) -> Result<()> {
-    let pointer = get_pointer(env, object)?;
-    #[allow(unused_variables)]
-    let server = unsafe { Box::from_raw(pointer as *mut Server) };
-
-    Ok(())
-}
-
 #[no_mangle]
-pub extern "system" fn Java_net_pixaurora_catculator_impl_http_ServerImpl_create<'local>(
-    mut _env: JNIEnv<'local>,
-    _class: JClass<'local>,
+pub extern "system" fn Java_net_pixaurora_catculator_impl_http_ServerImpl_create<'r>(
+    mut _env: JNIEnv<'r>,
+    _class: JClass<'r>,
 ) -> jlong {
-    create()
+    pack_box(Server::new())
 }
 
 #[no_mangle]
-pub extern "system" fn Java_net_pixaurora_catculator_impl_http_ServerImpl_runServer0<'local>(
-    mut env: JNIEnv<'local>,
-    object: JObject<'local>,
-) -> JString<'local> {
+pub extern "system" fn Java_net_pixaurora_catculator_impl_http_ServerImpl_run0<'r>(
+    mut env: JNIEnv<'r>,
+    object: JObject<'r>,
+) -> JString<'r> {
     match run_server(&object, &mut env) {
-        Ok(token) => token,
-        Err(error) => {
-            error.throw(&mut env);
-            JString::default().into()
-        }
+        Ok(token) => return token,
+        Err(error) => error.throw(&mut env),
     }
+
+    JString::default()
 }
 
 #[no_mangle]
-pub extern "system" fn Java_net_pixaurora_catculator_impl_http_ServerImpl_drop<'local>(
-    mut env: JNIEnv<'local>,
-    object: JObject<'local>,
+pub extern "system" fn Java_net_pixaurora_catculator_impl_http_ServerImpl_drop<'r>(
+    mut env: JNIEnv<'r>,
+    object: JObject<'r>,
 ) -> () {
-    if let Err(error) = drop(&object, &mut env) {
-        panic!("Couldn't drop server due to an error! {}", error);
+    if let Err(error) = drop_box::<Server>(&mut env, &object) {
+        panic!("Couldn't drop http server due to an error! {}", error);
     }
 }

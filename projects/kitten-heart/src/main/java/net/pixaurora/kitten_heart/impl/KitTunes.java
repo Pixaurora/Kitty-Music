@@ -1,10 +1,12 @@
 package net.pixaurora.kitten_heart.impl;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import net.pixaurora.catculator.api.http.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +23,18 @@ import net.pixaurora.kitten_heart.impl.service.ServiceLoading;
 import net.pixaurora.catculator.impl.Catculator;
 
 public class KitTunes {
+    static {
+        Catculator.init();
+
+        try {
+            CLIENT = Client.create(buildUserAgent());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create HTTP client", e);
+        }
+    }
+
+    public static final Client CLIENT;
+
     public static final Logger LOGGER = LoggerFactory.getLogger(Constants.MOD_ID);
 
     public static final ConfigManager<ScrobblerCache> SCROBBLER_CACHE = new ConfigManager<>(
@@ -42,8 +56,6 @@ public class KitTunes {
         // doing this can sometimes cause issues.
         MusicMetadata.init(MusicMetadataLoader.albumFiles(), MusicMetadataLoader.artistFiles(),
                 MusicMetadataLoader.trackFiles());
-
-        Catculator.init();
     }
 
     public static void tick() {
@@ -51,6 +63,11 @@ public class KitTunes {
     }
 
     public static void stop() {
+        CLIENT.close();
         EventHandling.stop();
+    }
+
+    private static String buildUserAgent() {
+        return "Kit Tunes/" + Constants.MOD_VERSION + " (+" + Constants.HOMEPAGE + ")";
     }
 }

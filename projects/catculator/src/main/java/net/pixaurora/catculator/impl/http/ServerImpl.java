@@ -3,20 +3,20 @@ package net.pixaurora.catculator.impl.http;
 import net.pixaurora.catculator.api.http.Server;
 
 public class ServerImpl implements Server {
-    private final long pointer;
+    private final long ptr;
 
     public ServerImpl() {
-        this.pointer = create();
+        this.ptr = create();
     }
 
     private static native long create();
 
     @Override
-    public String runServer() {
-        return this.runServer0();
+    public String run() {
+        return this.run0();
     }
 
-    private native String runServer0();
+    private native String run0();
 
     @Override
     public void close() {

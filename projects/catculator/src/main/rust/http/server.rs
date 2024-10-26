@@ -67,7 +67,7 @@ impl Server {
 
         match token {
             Some(token) => Ok(token),
-            None => Err(Error::Server("Token was not obtained.".into())),
+            None => Err(Error::String("Token was not obtained.".into())),
         }
     }
 
