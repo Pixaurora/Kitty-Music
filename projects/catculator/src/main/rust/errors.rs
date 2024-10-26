@@ -1,9 +1,11 @@
 use std::fmt::Display;
 use std::num::TryFromIntError;
+use std::str::Utf8Error;
 
 use jni::errors::Error as JNIError;
 use jni::JNIEnv;
 use lofty::error::LoftyError;
+use reqwest::header::ToStrError;
 use rocket::Error as RocketError;
 use std::io::Error as IOError;
 use tokio::sync::mpsc::error::TryRecvError;
@@ -13,10 +15,13 @@ use tokio::task::JoinError;
 pub enum Error {
     JNI(JNIError),
     IO(IOError),
+    Utf8Error(Utf8Error),
     Rocket(RocketError),
     Recv(TryRecvError),
+    Reqwest(reqwest::Error),
     Join(JoinError),
-    Server(String),
+    String(String),
+    ToStrError(ToStrError),
     Lofty(LoftyError),
     TryFromInt(TryFromIntError),
 }
@@ -38,10 +43,13 @@ impl Display for Error {
         match self {
             Error::JNI(error) => error.fmt(f),
             Error::IO(error) => error.fmt(f),
+            Error::Utf8Error(error) => error.fmt(f),
             Error::Rocket(error) => error.fmt(f),
             Error::Recv(error) => error.fmt(f),
+            Error::Reqwest(error) => error.fmt(f),
             Error::Join(error) => error.fmt(f),
-            Error::Server(message) => write!(f, "Server Error: {}", message),
+            Error::String(message) => write!(f, "Server Error: {}", message),
+            Error::ToStrError(error) => error.fmt(f),
             Error::Lofty(error) => error.fmt(f),
             Error::TryFromInt(error) => error.fmt(f),
         }
@@ -60,9 +68,27 @@ impl From<IOError> for Error {
     }
 }
 
+impl From<Utf8Error> for Error {
+    fn from(value: Utf8Error) -> Self {
+        Error::Utf8Error(value)
+    }
+}
+
 impl From<RocketError> for Error {
     fn from(value: RocketError) -> Self {
         Error::Rocket(value)
+    }
+}
+
+impl From<TryRecvError> for Error {
+    fn from(value: TryRecvError) -> Self {
+        Error::Recv(value)
+    }
+}
+
+impl From<reqwest::Error> for Error {
+    fn from(value: reqwest::Error) -> Self {
+        Error::Reqwest(value)
     }
 }
 
@@ -72,9 +98,9 @@ impl From<JoinError> for Error {
     }
 }
 
-impl From<TryRecvError> for Error {
-    fn from(value: TryRecvError) -> Self {
-        Error::Recv(value)
+impl From<ToStrError> for Error {
+    fn from(value: ToStrError) -> Self {
+        Error::ToStrError(value)
     }
 }
 

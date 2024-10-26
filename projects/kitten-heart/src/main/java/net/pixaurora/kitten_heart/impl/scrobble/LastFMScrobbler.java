@@ -1,6 +1,8 @@
 package net.pixaurora.kitten_heart.impl.scrobble;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -8,21 +10,24 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import net.pixaurora.catculator.api.error.ClientResponseException;
+import net.pixaurora.catculator.api.http.RequestBuilder;
+import net.pixaurora.catculator.api.http.Response;
+import net.pixaurora.kitten_heart.impl.KitTunes;
+import net.pixaurora.kitten_heart.impl.error.UnhandledKitTunesException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import net.pixaurora.kitten_heart.impl.error.KitTunesException;
 import net.pixaurora.kitten_heart.impl.error.ScrobblerParsingException;
-import net.pixaurora.kitten_heart.impl.error.UnhandledKitTunesException;
 import net.pixaurora.kitten_heart.impl.network.Encryption;
-import net.pixaurora.kitten_heart.impl.network.HttpHelper;
 import net.pixaurora.kitten_heart.impl.network.XMLHelper;
 
 public class LastFMScrobbler implements Scrobbler {
     public static final String API_KEY = "6f9e533b5f6631a5aa3070f5e757de8c";
     public static final String SHARED_SECRET = "97fbf9a3d76ba36dfb5a2f6c3215bf49";
 
-    public static final String ROOT_API_URL = "http://ws.audioscrobbler.com/2.0/";
+    public static final String ROOT_API_URL = "https://ws.audioscrobbler.com/2.0/";
     public static final String SETUP_URL = "https://last.fm/api/auth?api_key=" + API_KEY;
 
     public static final ScrobblerType<LastFMScrobbler> TYPE = new ScrobblerType<>("last.fm.new", LastFMScrobbler.class,
@@ -45,46 +50,61 @@ public class LastFMScrobbler implements Scrobbler {
 
     @Override
     public void startScrobbling(ScrobbleInfo track) throws KitTunesException {
-        Map<String, String> args = new HashMap<>();
+        Map<String, String> query = new HashMap<>();
 
-        args.put("method", "track.updateNowPlaying");
+        query.put("method", "track.updateNowPlaying");
 
-        args.put("artist", track.artistTitle());
-        args.put("track", track.trackTitle());
-        args.put("api_key", this.apiKey());
-        args.put("sk", this.session.key);
+        query.put("artist", track.artistTitle());
+        query.put("track", track.trackTitle());
+        query.put("api_key", this.apiKey());
+        query.put("sk", this.session.key);
 
         if (track.albumTitle().isPresent()) {
-            args.put("album", track.albumTitle().get());
+            query.put("album", track.albumTitle().get());
         }
 
-        this.handleScrobbling(this.addSignature(args));
+        this.submitScrobble(this.addSignature(query));
     }
 
     @Override
     public void completeScrobbling(ScrobbleInfo track) throws KitTunesException {
-        Map<String, String> args = new HashMap<>();
+        Map<String, String> query = new HashMap<>();
 
-        args.put("method", "track.scrobble");
+        query.put("method", "track.scrobble");
 
-        args.put("artist", track.artistTitle());
-        args.put("track", track.trackTitle());
-        args.put("timestamp", String.valueOf(track.startTime().getEpochSecond()));
-        args.put("api_key", this.apiKey());
-        args.put("sk", this.session.key);
+        query.put("artist", track.artistTitle());
+        query.put("track", track.trackTitle());
+        query.put("timestamp", String.valueOf(track.startTime().getEpochSecond()));
+        query.put("api_key", this.apiKey());
+        query.put("sk", this.session.key);
 
         Optional<String> albumTitle = track.albumTitle();
         if (albumTitle.isPresent()) {
-            args.put("album", albumTitle.get());
+            query.put("album", albumTitle.get());
         }
 
-        this.handleScrobbling(this.addSignature(args));
+        this.submitScrobble(this.addSignature(query));
     }
 
-    private void handleScrobbling(Map<String, String> args) throws KitTunesException {
-        InputStream responseBody = HttpHelper.post(ROOT_API_URL, args);
+    private void submitScrobble(Map<String, String> query) throws KitTunesException {
+        RequestBuilder builder = KitTunes.CLIENT.post(ROOT_API_URL);
 
-        UnhandledKitTunesException.runOrThrow(() -> HttpHelper.logResponse(responseBody));
+        for (Map.Entry<String, String> entry : query.entrySet()) {
+            builder.query(entry.getKey(), entry.getValue());
+        }
+
+        Response response = null;
+
+        try {
+            response = builder.send();
+        } catch (ClientResponseException e) {
+            KitTunes.LOGGER.error("Failed to submit scrobble.", e);
+        }
+
+        if (response != null) {
+            String message = new String(response.body(), StandardCharsets.UTF_8);
+            KitTunes.LOGGER.info("Received {} with body {}.", response.status(), message);
+        }
     }
 
     private Map<String, String> addSignature(Map<String, String> parameters) {
@@ -109,19 +129,36 @@ public class LastFMScrobbler implements Scrobbler {
     }
 
     private static LastFMSession createSession(String token) throws ScrobblerParsingException {
-        Map<String, String> args = new HashMap<>();
+        Map<String, String> query = new HashMap<>();
 
-        args.put("method", "auth.getSession");
-        args.put("api_key", API_KEY);
-        args.put("token", token);
+        query.put("method", "auth.getSession");
+        query.put("api_key", API_KEY);
+        query.put("token", token);
 
-        InputStream responseBody = HttpHelper.get(ROOT_API_URL, addSignature(args, SHARED_SECRET));
+        RequestBuilder builder = KitTunes.CLIENT.get(ROOT_API_URL);
 
-        Document body = XMLHelper.getDocument(responseBody);
+        for (Map.Entry<String, String> entry : addSignature(query, SHARED_SECRET).entrySet()) {
+            builder.query(entry.getKey(), entry.getValue());
+        }
 
-        Node root = XMLHelper.requireChild("lfm", body);
+        Response response = null;
 
-        return LastFMSession.fromXML("session", root);
+        try {
+            response = builder.send();
+        } catch (ClientResponseException e) {
+            throw new UnhandledKitTunesException(e);
+        }
+
+        if (response == null || !response.ok()) {
+            throw new UnhandledKitTunesException("Response not ok");
+        } else {
+            InputStream stream = new ByteArrayInputStream(response.body());
+
+            Document body = XMLHelper.getDocument(stream);
+            Node root = XMLHelper.requireChild("lfm", body);
+
+            return LastFMSession.fromXML("session", root);
+        }
     }
 
     @Override

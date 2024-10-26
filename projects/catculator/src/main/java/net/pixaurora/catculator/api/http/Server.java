@@ -10,7 +10,7 @@ public interface Server extends Closeable {
         return new ServerImpl();
     }
 
-    public String runServer() throws IOException;
+    public String run() throws IOException;
 
     public void close();
 }
