@@ -21,21 +21,21 @@ import net.pixaurora.kit_tunes.api.resource.ResourcePath;
 import net.pixaurora.kitten_cube.impl.MinecraftClient;
 import net.pixaurora.kitten_heart.impl.error.UnhandledKitTunesException;
 import net.pixaurora.kitten_heart.impl.event.TrackEventImpl;
+import net.pixaurora.kitten_heart.impl.music.control.MusicControls;
 import net.pixaurora.kitten_heart.impl.music.metadata.MusicMetadata;
 import net.pixaurora.kitten_heart.impl.music.progress.PlayingSong;
 import net.pixaurora.kitten_heart.impl.music.progress.PolledListeningProgress;
 import net.pixaurora.kitten_heart.impl.resource.temp.FileAccess;
-import net.pixaurora.kitten_heart.impl.util.Pair;
 
 public class EventHandling {
-    private static final Map<ListeningProgress, Pair<ResourcePath, Optional<Track>>> PLAYING_TRACKS = new HashMap<>();
+    private static final Map<ListeningProgress, PlayingSong> PLAYING_TRACKS = new HashMap<>();
     private static List<Runnable> MAIN_THREAD_TASKS = new ArrayList<>();
 
-    public static PolledListeningProgress handleTrackStart(ResourcePath path) {
+    public static PolledListeningProgress handleTrackStart(ResourcePath path, MusicControls controls) {
         PolledListeningProgress progress = new PolledListeningProgress();
 
         KitTunes.EXECUTOR.execute(() -> {
-            TrackStartEvent event = createStartEvent(path, progress);
+            TrackStartEvent event = createStartEvent(path, progress, controls);
 
             processEvent(listener -> listener.onTrackStart(event));
         });
@@ -45,12 +45,12 @@ public class EventHandling {
 
     public static void handleTrackEnd(ListeningProgress progress) {
         KitTunes.EXECUTOR.execute(() -> {
-            handleTrackEnd(progress, getTrackInfo(progress, true));
+            handleTrackEnd(getTrackInfo(progress, true));
         });
     }
 
-    private static void handleTrackEnd(ListeningProgress progress, Pair<ResourcePath, Optional<Track>> pathAndTrack) {
-        TrackEndEvent event = new TrackEventImpl(pathAndTrack.first(), pathAndTrack.second(), progress);
+    private static void handleTrackEnd(PlayingSong song) {
+        TrackEndEvent event = new TrackEventImpl(song.path(), song.track(), song.progress());
 
         processEvent(listener -> listener.onTrackEnd(event));
     }
@@ -88,7 +88,7 @@ public class EventHandling {
 
     public static void stop() {
         synchronized (PLAYING_TRACKS) {
-            PLAYING_TRACKS.forEach(EventHandling::handleTrackEnd);
+            PLAYING_TRACKS.values().forEach(EventHandling::handleTrackEnd);
         }
 
         tick(); // Tick one last time to clear any remaining tasks out.
@@ -96,17 +96,12 @@ public class EventHandling {
 
     public static Collection<PlayingSong> playingSongs() {
         synchronized (PLAYING_TRACKS) {
-            List<PlayingSong> songs = new ArrayList<>();
-
-            for (Map.Entry<ListeningProgress, Pair<ResourcePath, Optional<Track>>> entry : PLAYING_TRACKS.entrySet()) {
-                songs.add(new PlayingSong(entry.getValue().second(), entry.getKey()));
-            }
-
-            return songs;
+            return PLAYING_TRACKS.values();
         }
     }
 
-    private static TrackStartEvent createStartEvent(ResourcePath path, ListeningProgress progress) {
+    private static TrackStartEvent createStartEvent(ResourcePath path, ListeningProgress progress,
+            MusicControls controls) {
         Optional<Track> track = MusicMetadata.matchTrack(path);
 
         if (track.isPresent()) {
@@ -116,7 +111,7 @@ public class EventHandling {
         }
 
         synchronized (PLAYING_TRACKS) {
-            PLAYING_TRACKS.put(progress, Pair.of(path, track));
+            PLAYING_TRACKS.put(progress, new PlayingSong(path, track, progress, controls));
         }
 
         return new TrackEventImpl(path, track, progress);
@@ -128,10 +123,10 @@ public class EventHandling {
         }
     }
 
-    private static Pair<ResourcePath, Optional<Track>> getTrackInfo(ListeningProgress progress,
+    private static PlayingSong getTrackInfo(ListeningProgress progress,
             boolean flushFromMap) {
         synchronized (PLAYING_TRACKS) {
-            Pair<ResourcePath, Optional<Track>> trackInfo = Objects.requireNonNull(PLAYING_TRACKS.get(progress));
+            PlayingSong trackInfo = Objects.requireNonNull(PLAYING_TRACKS.get(progress));
 
             if (flushFromMap) {
                 PLAYING_TRACKS.remove(progress);

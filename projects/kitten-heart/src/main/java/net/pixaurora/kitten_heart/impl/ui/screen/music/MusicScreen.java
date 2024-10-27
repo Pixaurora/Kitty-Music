@@ -16,9 +16,12 @@ import net.pixaurora.kitten_cube.impl.ui.screen.align.AlignmentStrategy;
 import net.pixaurora.kitten_cube.impl.ui.texture.GuiTexture;
 import net.pixaurora.kitten_cube.impl.ui.texture.Texture;
 import net.pixaurora.kitten_cube.impl.ui.widget.StaticTexture;
+import net.pixaurora.kitten_cube.impl.ui.widget.button.RectangularButton;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.PushableTextLines;
 import net.pixaurora.kitten_heart.impl.EventHandling;
 import net.pixaurora.kitten_heart.impl.KitTunes;
+import net.pixaurora.kitten_heart.impl.music.control.MusicControls;
+import net.pixaurora.kitten_heart.impl.music.control.PlaybackState;
 import net.pixaurora.kitten_heart.impl.music.progress.PlayingSong;
 import net.pixaurora.kitten_heart.impl.ui.screen.KitTunesScreenTemplate;
 import net.pixaurora.kitten_heart.impl.ui.widget.Timer;
@@ -122,7 +125,21 @@ public class MusicScreen extends KitTunesScreenTemplate {
             songInfo.get().push(Component.literal("No track found :("), Color.RED);
         }
 
-        return new MusicDisplayMode(progressBar, timer, albumArt, songInfo, song);
+        WidgetContainer<RectangularButton> pauseButton = this
+                .addWidget(
+                        RectangularButton.vanillaButton(Point.of(0, 30), Component.literal("pause/play"), (button) -> {
+                            MusicControls controls = song.controls();
+
+                            PlaybackState state = controls.playbackState();
+
+                            if (state == PlaybackState.PAUSED) {
+                                controls.unpause();
+                            } else if (state == PlaybackState.PLAYING) {
+                                controls.pause();
+                            }
+                        }));
+
+        return new MusicDisplayMode(progressBar, timer, albumArt, songInfo, pauseButton, song);
     }
 
     public DisplayMode createWaitingDisplay() {
@@ -138,7 +155,7 @@ public class MusicScreen extends KitTunesScreenTemplate {
 
         MusicDisplayMode(WidgetContainer<ProgressBar> progressBar, WidgetContainer<Timer> timer,
                 WidgetContainer<StaticTexture> albumArt, WidgetContainer<PushableTextLines> songInfo,
-                PlayingSong song) {
+                WidgetContainer<RectangularButton> pauseButton, PlayingSong song) {
             this.progressBar = progressBar;
             this.timer = timer;
             this.albumArt = albumArt;

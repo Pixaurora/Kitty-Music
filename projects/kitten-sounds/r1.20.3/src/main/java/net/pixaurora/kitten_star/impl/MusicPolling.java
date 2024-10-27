@@ -14,29 +14,33 @@ import net.minecraft.sounds.SoundSource;
 import net.pixaurora.kitten_heart.impl.EventHandling;
 import net.pixaurora.kitten_heart.impl.music.progress.PolledListeningProgress;
 import net.pixaurora.kitten_heart.impl.music.progress.SongProgressTracker;
-import net.pixaurora.kitten_heart.impl.util.Pair;
 
 public class MusicPolling implements SoundEventListener {
-    private static List<Pair<SoundInstance, PolledListeningProgress>> TRACKS_TO_POLL = new ArrayList<>();
-    private static List<Pair<ChannelHandle, PolledListeningProgress>> POLLED_TRACKS = new ArrayList<>();
+    public static List<PolledSong<SoundInstance>> TRACKS_TO_POLL = new ArrayList<>();
+    public static List<PolledSong<ChannelHandle>> POLLED_TRACKS = new ArrayList<>();
 
     @Override
     public void onPlaySound(SoundInstance sound, WeighedSoundEvents soundSet, float range) {
         SoundSource source = sound.getSource();
         if (source == SoundSource.MUSIC || source == SoundSource.RECORDS) {
-            PolledListeningProgress progress = EventHandling
-                    .handleTrackStart(SoundEventsUtils.minecraftTypeToInternalType(sound.getSound().getPath()));
+            MusicControlsImpl controls = new MusicControlsImpl();
 
-            TRACKS_TO_POLL.add(Pair.of(sound, progress));
+            PolledListeningProgress progress = EventHandling.handleTrackStart(
+                    SoundEventsUtils.minecraftTypeToInternalType(sound.getSound().getPath()), controls);
+
+            TRACKS_TO_POLL.add(new PolledSong<SoundInstance>(sound, progress, controls));
         }
     }
 
     public static void pollTrackProgress(Map<SoundInstance, ChannelAccess.ChannelHandle> instanceToChannel) {
-        TRACKS_TO_POLL.removeIf((soundAndProgress) -> {
-            Optional<ChannelHandle> channel = Optional.ofNullable(instanceToChannel.get(soundAndProgress.first()));
+        TRACKS_TO_POLL.removeIf((polledSong) -> {
+            Optional<ChannelHandle> channel = Optional.ofNullable(instanceToChannel.get(polledSong.polled()));
 
             if (channel.isPresent()) {
-                POLLED_TRACKS.add(Pair.of(channel.get(), soundAndProgress.second()));
+                ChannelHandle channelHandle = channel.get();
+
+                polledSong.controls().channel(channelHandle);
+                POLLED_TRACKS.add(new PolledSong<>(channelHandle, polledSong));
 
                 return true;
             } else {
@@ -44,14 +48,14 @@ public class MusicPolling implements SoundEventListener {
             }
         });
 
-        POLLED_TRACKS.removeIf((channelAndProgress) -> {
-            if (channelAndProgress.first().isStopped()) {
-                EventHandling.handleTrackEnd(channelAndProgress.second());
+        POLLED_TRACKS.removeIf((polledSong) -> {
+            if (polledSong.polled().isStopped()) {
+                EventHandling.handleTrackEnd(polledSong.progress());
 
                 return true;
             } else {
-                channelAndProgress.first().execute(
-                        channel -> channelAndProgress.second().measureProgress((SongProgressTracker) (Object) channel));
+                polledSong.polled().execute(
+                        channel -> polledSong.progress().measureProgress((SongProgressTracker) (Object) channel));
 
                 return false;
             }
