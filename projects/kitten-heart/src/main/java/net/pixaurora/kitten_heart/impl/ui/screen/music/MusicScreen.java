@@ -1,5 +1,7 @@
 package net.pixaurora.kitten_heart.impl.ui.screen.music;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import net.pixaurora.kit_tunes.api.music.Album;
@@ -139,7 +141,7 @@ public class MusicScreen extends KitTunesScreenTemplate {
                             }
                         }));
 
-        return new MusicDisplayMode(progressBar, timer, albumArt, songInfo, pauseButton, song);
+        return new MusicDisplayMode(song, Arrays.asList(progressBar, timer, albumArt, songInfo, pauseButton));
     }
 
     public DisplayMode createWaitingDisplay() {
@@ -147,22 +149,12 @@ public class MusicScreen extends KitTunesScreenTemplate {
     }
 
     private class MusicDisplayMode implements DisplayMode {
-        private final WidgetContainer<ProgressBar> progressBar;
-        private final WidgetContainer<Timer> timer;
-        private final WidgetContainer<StaticTexture> albumArt;
-        private final WidgetContainer<PushableTextLines> songInfo;
-        private final WidgetContainer<RectangularButton> pauseButton;
         private final PlayingSong song;
+        private final List<WidgetContainer<?>> widgets;
 
-        MusicDisplayMode(WidgetContainer<ProgressBar> progressBar, WidgetContainer<Timer> timer,
-                WidgetContainer<StaticTexture> albumArt, WidgetContainer<PushableTextLines> songInfo,
-                WidgetContainer<RectangularButton> pauseButton, PlayingSong song) {
-            this.progressBar = progressBar;
-            this.timer = timer;
-            this.albumArt = albumArt;
-            this.songInfo = songInfo;
-            this.pauseButton = pauseButton;
+        MusicDisplayMode(PlayingSong song, List<WidgetContainer<?>> widgets) {
             this.song = song;
+            this.widgets = widgets;
         }
 
         @Override
@@ -172,11 +164,9 @@ public class MusicScreen extends KitTunesScreenTemplate {
 
         @Override
         public void cleanup() {
-            MusicScreen.this.removeWidget(this.progressBar);
-            MusicScreen.this.removeWidget(this.timer);
-            MusicScreen.this.removeWidget(this.albumArt);
-            MusicScreen.this.removeWidget(this.songInfo);
-            MusicScreen.this.removeWidget(this.pauseButton);
+            for (WidgetContainer<?> widget : this.widgets) {
+                MusicScreen.this.removeWidget(widget);
+            }
         }
     }
 

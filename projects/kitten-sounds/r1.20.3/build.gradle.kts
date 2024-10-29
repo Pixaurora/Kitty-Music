@@ -5,7 +5,7 @@ plugins {
 
 mod {
     intermediaryMappings = "net.fabricmc:intermediary"
-    mixin("kitten_star.mixins.json")
+    mixin("kitten_sounds.mixins.json")
 }
 
 dependencies {
