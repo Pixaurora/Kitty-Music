@@ -1,4 +1,4 @@
-package net.pixaurora.kitten_star.impl;
+package net.pixaurora.kitten_sounds.impl;
 
 import net.minecraft.resources.ResourceLocation;
 import net.pixaurora.kit_tunes.api.resource.ResourcePath;

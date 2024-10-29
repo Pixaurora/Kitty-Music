@@ -1,4 +1,4 @@
-package net.pixaurora.kitten_star.impl.mixin;
+package net.pixaurora.kitten_sounds.impl.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.Minecraft;
 import net.pixaurora.kitten_heart.impl.KitTunes;
-import net.pixaurora.kitten_star.impl.MusicPolling;
+import net.pixaurora.kitten_sounds.impl.MusicPolling;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {

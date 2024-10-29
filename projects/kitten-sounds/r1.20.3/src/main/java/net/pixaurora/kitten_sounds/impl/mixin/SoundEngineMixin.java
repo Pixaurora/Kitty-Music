@@ -1,4 +1,4 @@
-package net.pixaurora.kitten_star.impl.mixin;
+package net.pixaurora.kitten_sounds.impl.mixin;
 
 import java.util.Map;
 
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundEngine;
-import net.pixaurora.kitten_star.impl.MusicPolling;
+import net.pixaurora.kitten_sounds.impl.MusicPolling;
 
 @Mixin(SoundEngine.class)
 public class SoundEngineMixin {

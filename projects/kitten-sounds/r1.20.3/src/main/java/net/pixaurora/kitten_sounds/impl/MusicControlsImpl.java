@@ -1,4 +1,4 @@
-package net.pixaurora.kitten_star.impl;
+package net.pixaurora.kitten_sounds.impl;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -18,6 +18,7 @@ public class MusicControlsImpl implements MusicControls {
         this.channel = Optional.of(channel);
     }
 
+    @Override
     public void pause() {
         if (this.channel.isPresent()) {
             this.channel.get().execute(Channel::pause);

@@ -1,4 +1,4 @@
-package net.pixaurora.kitten_star.impl;
+package net.pixaurora.kitten_sounds.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class MusicPolling implements SoundEventListener {
     public static List<PolledSong<ChannelHandle>> POLLED_TRACKS = new ArrayList<>();
 
     @Override
-    public void onPlaySound(SoundInstance sound, WeighedSoundEvents soundSet) {
+    public void onPlaySound(SoundInstance sound, WeighedSoundEvents soundSet, float range) {
         SoundSource source = sound.getSource();
         if (source == SoundSource.MUSIC || source == SoundSource.RECORDS) {
             MusicControlsImpl controls = new MusicControlsImpl();

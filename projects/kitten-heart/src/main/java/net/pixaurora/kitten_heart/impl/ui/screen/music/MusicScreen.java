@@ -151,6 +151,7 @@ public class MusicScreen extends KitTunesScreenTemplate {
         private final WidgetContainer<Timer> timer;
         private final WidgetContainer<StaticTexture> albumArt;
         private final WidgetContainer<PushableTextLines> songInfo;
+        private final WidgetContainer<RectangularButton> pauseButton;
         private final PlayingSong song;
 
         MusicDisplayMode(WidgetContainer<ProgressBar> progressBar, WidgetContainer<Timer> timer,
@@ -160,6 +161,7 @@ public class MusicScreen extends KitTunesScreenTemplate {
             this.timer = timer;
             this.albumArt = albumArt;
             this.songInfo = songInfo;
+            this.pauseButton = pauseButton;
             this.song = song;
         }
 
@@ -174,6 +176,7 @@ public class MusicScreen extends KitTunesScreenTemplate {
             MusicScreen.this.removeWidget(this.timer);
             MusicScreen.this.removeWidget(this.albumArt);
             MusicScreen.this.removeWidget(this.songInfo);
+            MusicScreen.this.removeWidget(this.pauseButton);
         }
     }
 

@@ -1,4 +1,4 @@
-package net.pixaurora.kitten_star.impl;
+package net.pixaurora.kitten_sounds.impl;
 
 import net.pixaurora.kitten_heart.impl.music.progress.PolledListeningProgress;
 

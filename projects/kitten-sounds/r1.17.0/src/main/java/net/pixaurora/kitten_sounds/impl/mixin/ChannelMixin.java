@@ -1,4 +1,4 @@
-package net.pixaurora.kitten_star.impl.mixin;
+package net.pixaurora.kitten_sounds.impl.mixin;
 
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
