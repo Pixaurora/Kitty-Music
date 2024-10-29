@@ -1,4 +1,4 @@
-package net.pixaurora.kitten_heart.impl.scrobble;
+package net.pixaurora.kitten_heart.impl.scrobble.scrobbler;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import net.pixaurora.catculator.api.error.ClientResponseException;
+import net.pixaurora.catculator.api.http.Client;
 import net.pixaurora.catculator.api.http.RequestBuilder;
 import net.pixaurora.catculator.api.http.Response;
 import net.pixaurora.kitten_heart.impl.KitTunes;
@@ -22,6 +23,8 @@ import net.pixaurora.kitten_heart.impl.error.KitTunesException;
 import net.pixaurora.kitten_heart.impl.error.ScrobblerParsingException;
 import net.pixaurora.kitten_heart.impl.network.Encryption;
 import net.pixaurora.kitten_heart.impl.network.XMLHelper;
+import net.pixaurora.kitten_heart.impl.scrobble.ScrobbleInfo;
+import net.pixaurora.kitten_heart.impl.scrobble.ScrobblerType;
 
 public class LastFMScrobbler implements Scrobbler {
     public static final String API_KEY = "6f9e533b5f6631a5aa3070f5e757de8c";
@@ -30,8 +33,8 @@ public class LastFMScrobbler implements Scrobbler {
     public static final String ROOT_API_URL = "https://ws.audioscrobbler.com/2.0/";
     public static final String SETUP_URL = "https://last.fm/api/auth?api_key=" + API_KEY;
 
-    public static final ScrobblerType<LastFMScrobbler> TYPE = new ScrobblerType<>("last.fm.new", LastFMScrobbler.class,
-            SETUP_URL, LastFMScrobbler::setup);
+    public static final ScrobblerType<LastFMScrobbler> TYPE = ScrobblerType.authServerSetup("last.fm.new",
+            LastFMScrobbler.class, SETUP_URL, LastFMScrobbler::completeSetup);
 
     private final LastFMSession session;
 
@@ -39,17 +42,17 @@ public class LastFMScrobbler implements Scrobbler {
         this.session = session;
     }
 
-    public static LastFMScrobbler setup(String token) throws KitTunesException {
-        return new LastFMScrobbler(createSession(token));
+    public static LastFMScrobbler completeSetup(Client client, String token) throws KitTunesException {
+        return new LastFMScrobbler(createSession(client, token));
     }
 
     @Override
-    public String username() {
+    public String username(Client client) {
         return this.session.name;
     }
 
     @Override
-    public void startScrobbling(ScrobbleInfo track) throws KitTunesException {
+    public void startScrobbling(Client client, ScrobbleInfo track) throws KitTunesException {
         Map<String, String> query = new HashMap<>();
 
         query.put("method", "track.updateNowPlaying");
@@ -63,11 +66,11 @@ public class LastFMScrobbler implements Scrobbler {
             query.put("album", track.albumTitle().get());
         }
 
-        this.submitScrobble(this.addSignature(query));
+        this.submitScrobble(client, this.addSignature(query));
     }
 
     @Override
-    public void completeScrobbling(ScrobbleInfo track) throws KitTunesException {
+    public void completeScrobbling(Client client, ScrobbleInfo track) throws KitTunesException {
         Map<String, String> query = new HashMap<>();
 
         query.put("method", "track.scrobble");
@@ -83,11 +86,11 @@ public class LastFMScrobbler implements Scrobbler {
             query.put("album", albumTitle.get());
         }
 
-        this.submitScrobble(this.addSignature(query));
+        this.submitScrobble(client, this.addSignature(query));
     }
 
-    private void submitScrobble(Map<String, String> query) throws KitTunesException {
-        RequestBuilder builder = KitTunes.CLIENT.post(ROOT_API_URL);
+    private void submitScrobble(Client client, Map<String, String> query) throws KitTunesException {
+        RequestBuilder builder = client.post(ROOT_API_URL);
 
         for (Map.Entry<String, String> entry : query.entrySet()) {
             builder.query(entry.getKey(), entry.getValue());
@@ -128,14 +131,14 @@ public class LastFMScrobbler implements Scrobbler {
         return parameters;
     }
 
-    private static LastFMSession createSession(String token) throws ScrobblerParsingException {
+    private static LastFMSession createSession(Client client, String token) throws ScrobblerParsingException {
         Map<String, String> query = new HashMap<>();
 
         query.put("method", "auth.getSession");
         query.put("api_key", API_KEY);
         query.put("token", token);
 
-        RequestBuilder builder = KitTunes.CLIENT.get(ROOT_API_URL);
+        RequestBuilder builder = client.get(ROOT_API_URL);
 
         for (Map.Entry<String, String> entry : addSignature(query, SHARED_SECRET).entrySet()) {
             builder.query(entry.getKey(), entry.getValue());

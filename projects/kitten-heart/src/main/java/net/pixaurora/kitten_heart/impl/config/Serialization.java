@@ -7,7 +7,7 @@ import net.pixaurora.kit_tunes.api.resource.ResourcePath;
 import net.pixaurora.kitten_heart.impl.music.ArtistImpl;
 import net.pixaurora.kitten_heart.impl.music.TrackImpl;
 import net.pixaurora.kitten_heart.impl.resource.ResourcePathImpl;
-import net.pixaurora.kitten_heart.impl.scrobble.Scrobbler;
+import net.pixaurora.kitten_heart.impl.scrobble.scrobbler.Scrobbler;
 
 public class Serialization {
     private static Gson SERIALIZER = createSerializer();

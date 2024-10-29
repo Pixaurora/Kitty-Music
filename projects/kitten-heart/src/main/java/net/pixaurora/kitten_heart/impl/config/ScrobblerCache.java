@@ -11,11 +11,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 
+import net.pixaurora.catculator.api.http.Client;
 import net.pixaurora.kitten_heart.impl.KitTunes;
 import net.pixaurora.kitten_heart.impl.error.KitTunesException;
 import net.pixaurora.kitten_heart.impl.scrobble.ScrobbleInfo;
-import net.pixaurora.kitten_heart.impl.scrobble.Scrobbler;
 import net.pixaurora.kitten_heart.impl.scrobble.SimpleScrobbler;
+import net.pixaurora.kitten_heart.impl.scrobble.scrobbler.Scrobbler;
 
 public class ScrobblerCache implements SimpleScrobbler {
     private List<Scrobbler> scrobblers;
@@ -33,13 +34,13 @@ public class ScrobblerCache implements SimpleScrobbler {
     }
 
     @Override
-    public void startScrobbling(ScrobbleInfo track) {
-        this.handleScrobbling(scrobbler -> scrobbler.startScrobbling(track));
+    public void startScrobbling(Client client, ScrobbleInfo track) {
+        this.handleScrobbling(scrobbler -> scrobbler.startScrobbling(client, track));
     }
 
     @Override
-    public void completeScrobbling(ScrobbleInfo track) {
-        this.handleScrobbling(scrobbler -> scrobbler.completeScrobbling(track));
+    public void completeScrobbling(Client client, ScrobbleInfo track) {
+        this.handleScrobbling(scrobbler -> scrobbler.completeScrobbling(client, track));
     }
 
     private void handleScrobbling(ScrobbleAction action) {

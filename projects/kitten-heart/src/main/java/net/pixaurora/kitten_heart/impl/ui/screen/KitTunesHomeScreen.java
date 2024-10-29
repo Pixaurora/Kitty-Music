@@ -11,9 +11,8 @@ import net.pixaurora.kitten_cube.impl.ui.texture.GuiTexture;
 import net.pixaurora.kitten_cube.impl.ui.widget.StaticGuiTexture;
 import net.pixaurora.kitten_cube.impl.ui.widget.button.RectangularButton;
 import net.pixaurora.kitten_heart.impl.KitTunes;
-import net.pixaurora.kitten_heart.impl.scrobble.LastFMScrobbler;
+import net.pixaurora.kitten_heart.impl.scrobble.scrobbler.LastFMScrobbler;
 import net.pixaurora.kitten_heart.impl.ui.screen.music.MusicScreen;
-import net.pixaurora.kitten_heart.impl.ui.screen.scrobbler.ScrobblerSetupScreen;
 
 public class KitTunesHomeScreen extends KitTunesScreenTemplate {
     public static final GuiTexture SPLASH = GuiTexture.of(KitTunes.resource("textures/gui/sprites/logo/main.png"),
@@ -42,7 +41,7 @@ public class KitTunesHomeScreen extends KitTunesScreenTemplate {
         widgetPos = widgetPos.withX(0).offset(0, RectangularButton.DEFAULT_SIZE.y() + 4);
         widgetPos = RectangularButton.DEFAULT_SIZE.centerHorizontally(widgetPos);
         this.addWidget(RectangularButton.vanillaButton(widgetPos, REGISTER_SCROBBLER_LABEL,
-                button -> MinecraftClient.setScreen(new ScrobblerSetupScreen<>(this, LastFMScrobbler.TYPE))));
+                button -> MinecraftClient.setScreen(LastFMScrobbler.TYPE.setup().get().setupScreen(this))));
     }
 
     @Override

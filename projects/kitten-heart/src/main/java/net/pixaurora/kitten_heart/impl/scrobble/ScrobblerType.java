@@ -1,30 +1,33 @@
 package net.pixaurora.kitten_heart.impl.scrobble;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+import java.util.Optional;
 
-import net.pixaurora.catculator.api.http.Server;
 import net.pixaurora.kitten_heart.impl.config.dispatch.DispatchType;
-import net.pixaurora.kitten_heart.impl.error.KitTunesException;
+import net.pixaurora.kitten_heart.impl.scrobble.scrobbler.Scrobbler;
+import net.pixaurora.kitten_heart.impl.scrobble.setup.ScrobblerAuthFunction;
+import net.pixaurora.kitten_heart.impl.scrobble.setup.ScrobblerSetup;
+import net.pixaurora.kitten_heart.impl.scrobble.setup.ServerAuthSetup;
 
 public class ScrobblerType<T extends Scrobbler> implements DispatchType<Scrobbler> {
     private final String name;
     private final Class<T> targetClass;
-    private final String setupURL;
-    private final SetupMethod<T> setupMethod;
 
-    public ScrobblerType(String name, Class<T> targetClass, String setupURL, SetupMethod<T> setupMethod) {
+    private final Optional<ScrobblerSetup> setup;
+
+    public ScrobblerType(String name, Class<T> targetClass, Optional<ScrobblerSetup> setup) {
         super();
         this.name = name;
         this.targetClass = targetClass;
-        this.setupURL = setupURL;
-        this.setupMethod = setupMethod;
+        this.setup = setup;
     }
 
-    public ScrobblerSetup<T> setup(long timeout, TimeUnit unit) throws IOException {
-        Server server = Server.create();
+    public static <T extends Scrobbler> ScrobblerType<T> noSetup(String name, Class<T> targetClass) {
+        return new ScrobblerType<>(name, targetClass, Optional.empty());
+    }
 
-        return new ScrobblerSetup<>(server, this, timeout, unit);
+    public static <T extends Scrobbler> ScrobblerType<T> authServerSetup(String name, Class<T> targetClass,
+            String setupUrl, ScrobblerAuthFunction<T> authCallback) {
+        return new ScrobblerType<>(name, targetClass, Optional.of(new ServerAuthSetup<>(setupUrl, authCallback)));
     }
 
     @Override
@@ -37,16 +40,7 @@ public class ScrobblerType<T extends Scrobbler> implements DispatchType<Scrobble
         return targetClass;
     }
 
-    public String setupURL() {
-        return setupURL;
+    public Optional<ScrobblerSetup> setup() {
+        return this.setup;
     }
-
-    public SetupMethod<T> setupMethod() {
-        return setupMethod;
-    }
-
-    public static interface SetupMethod<T> {
-        public T createScrobbler(String token) throws KitTunesException;
-    }
-
 }

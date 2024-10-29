@@ -1,9 +1,8 @@
-package net.pixaurora.kitten_heart.impl.ui.screen.scrobbler;
+package net.pixaurora.kitten_heart.impl.ui.screen.scrobbler.setup;
 
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import net.pixaurora.kitten_cube.impl.MinecraftClient;
 import net.pixaurora.kitten_cube.impl.math.Point;
@@ -18,12 +17,12 @@ import net.pixaurora.kitten_cube.impl.ui.widget.text.PushableTextLines;
 import net.pixaurora.kitten_heart.impl.KitTunes;
 import net.pixaurora.kitten_heart.impl.error.KitTunesException;
 import net.pixaurora.kitten_heart.impl.error.ScrobblerSetupStartException;
-import net.pixaurora.kitten_heart.impl.scrobble.Scrobbler;
-import net.pixaurora.kitten_heart.impl.scrobble.ScrobblerSetup;
-import net.pixaurora.kitten_heart.impl.scrobble.ScrobblerType;
+import net.pixaurora.kitten_heart.impl.scrobble.scrobbler.Scrobbler;
+import net.pixaurora.kitten_heart.impl.scrobble.setup.ServerAuthSetup;
+import net.pixaurora.kitten_heart.impl.scrobble.setup.ServerAuthSetup.SetupProcess;
 import net.pixaurora.kitten_heart.impl.ui.screen.KitTunesScreenTemplate;
 
-public class ScrobblerSetupScreen<T extends Scrobbler> extends KitTunesScreenTemplate {
+public class ScrobblerServerAuthScreen<T extends Scrobbler> extends KitTunesScreenTemplate {
     private static final Component TITLE = Component.translatable("kit_tunes.scrobbler_setup.title");
 
     private static final Component SETUP_IN_BROWSER = Component
@@ -34,16 +33,16 @@ public class ScrobblerSetupScreen<T extends Scrobbler> extends KitTunesScreenTem
     private static final Component SETUP_STARTED = Component.translatable("kit_tunes.scrobbler_setup.started");
     private static final Component SETUP_COMPLETED = Component.translatable("kit_tunes.scrobbler_setup.success");
 
-    private final ScrobblerType<T> scrobblerType;
+    private final ServerAuthSetup<T> setup;
 
-    private Optional<ScrobblerSetup<T>> awaitedScrobbler;
+    private Optional<SetupProcess<T>> awaitedScrobbler;
     private Optional<Button> setupInBrowser;
     private Optional<PushableTextLines> setupStatus;
 
-    public ScrobblerSetupScreen(Screen previous, ScrobblerType<T> scrobblerType) {
+    public ScrobblerServerAuthScreen(Screen previous, ServerAuthSetup<T> setup) {
         super(previous);
 
-        this.scrobblerType = scrobblerType;
+        this.setup = setup;
         this.awaitedScrobbler = Optional.empty();
         this.setupStatus = Optional.empty();
     }
@@ -71,7 +70,7 @@ public class ScrobblerSetupScreen<T extends Scrobbler> extends KitTunesScreenTem
         PushableTextLines title = this.addWidget(PushableTextLines.regular(widgetPos)).get();
         title.push(TITLE, Color.WHITE);
 
-        String setupUrl = this.scrobblerType.setupURL();
+        String setupUrl = this.setup.url();
 
         widgetPos = title.endPos().offset(0, 10);
         Button setupInBrowser = this
@@ -86,7 +85,7 @@ public class ScrobblerSetupScreen<T extends Scrobbler> extends KitTunesScreenTem
         this.setupStatus = Optional.of(this.addWidget(PushableTextLines.regular(widgetPos)).get());
 
         try {
-            this.awaitedScrobbler = Optional.of(this.scrobblerType.setup(5, TimeUnit.MINUTES));
+            this.awaitedScrobbler = Optional.of(this.setup.run());
 
             this.setMessage(SETUP_STARTED);
         } catch (IOException e) {
@@ -118,7 +117,7 @@ public class ScrobblerSetupScreen<T extends Scrobbler> extends KitTunesScreenTem
     @Override
     public void tick() {
         if (this.awaitedScrobbler.isPresent()) {
-            ScrobblerSetup<T> awaitedScrobbler = this.awaitedScrobbler.get();
+            SetupProcess<T> awaitedScrobbler = this.awaitedScrobbler.get();
 
             if (awaitedScrobbler.isComplete()) {
                 try {
