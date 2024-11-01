@@ -58,8 +58,18 @@ public class MusicMetadataImpl implements MusicMetadataService, MutableMusicMeta
     }
 
     @Override
+    public Optional<Album> getAlbum(ResourcePath path) {
+        return Optional.ofNullable(this.albums.get(path));
+    }
+
+    @Override
     public Optional<Artist> getArtist(ResourcePath path) {
-        return Optional.ofNullable(artists.get(path));
+        return Optional.ofNullable(this.artists.get(path));
+    }
+
+    @Override
+    public Optional<Track> getTrack(ResourcePath path) {
+        return Optional.ofNullable(this.tracks.get(path));
     }
 
     @Override
@@ -76,11 +86,6 @@ public class MusicMetadataImpl implements MusicMetadataService, MutableMusicMeta
     @Override
     public List<Album> albumsWithTrack(Track track) {
         return trackToAlbums.computeIfAbsent(track.path(), path -> new ArrayList<>());
-    }
-
-    @Override
-    public Optional<Track> getTrack(ResourcePath path) {
-        return Optional.ofNullable(tracks.get(path));
     }
 
     @Override

@@ -1,7 +1,6 @@
 package net.pixaurora.kitten_heart.impl;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -15,6 +14,7 @@ import net.pixaurora.kit_tunes.api.resource.ResourcePath;
 import net.pixaurora.kitten_heart.impl.concurrent.KitTunesThreadFactory;
 import net.pixaurora.kitten_heart.impl.config.ConfigManager;
 import net.pixaurora.kitten_heart.impl.config.ScrobblerCache;
+import net.pixaurora.kitten_heart.impl.music.history.ListenHistory;
 import net.pixaurora.kitten_heart.impl.music.metadata.MusicMetadata;
 import net.pixaurora.kitten_heart.impl.music.metadata.MusicMetadataLoader;
 import net.pixaurora.kitten_heart.impl.resource.ResourcePathImpl;
@@ -38,7 +38,9 @@ public class KitTunes {
     public static final Logger LOGGER = LoggerFactory.getLogger(Constants.MOD_ID);
 
     public static final ConfigManager<ScrobblerCache> SCROBBLER_CACHE = new ConfigManager<>(
-            Constants.SCROBBLER_CACHE_PATH, ScrobblerCache.class, () -> new ScrobblerCache(Arrays.asList()));
+            Constants.SCROBBLER_CACHE_PATH, ScrobblerCache.class, ScrobblerCache::defaults);
+    public static final ConfigManager<ListenHistory> LISTEN_HISTORY = new ConfigManager<>(Constants.LISTEN_HISTORY_PATH,
+            ListenHistory.class, ListenHistory::defaults);
 
     public static final MinecraftUICompat UI_LAYER = ServiceLoading.loadJustOneOrThrow(MinecraftUICompat.class);
 
@@ -63,8 +65,8 @@ public class KitTunes {
     }
 
     public static void stop() {
-        CLIENT.close();
         EventHandling.stop();
+        CLIENT.close();
     }
 
     private static String buildUserAgent() {

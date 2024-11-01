@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import net.pixaurora.catculator.api.error.ClientResponseException;
@@ -16,6 +15,8 @@ import net.pixaurora.catculator.api.http.RequestBuilder;
 import net.pixaurora.catculator.api.http.Response;
 import net.pixaurora.kitten_heart.impl.KitTunes;
 import net.pixaurora.kitten_heart.impl.error.UnhandledKitTunesException;
+import net.pixaurora.kitten_heart.impl.music.history.ListenRecord;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -23,7 +24,6 @@ import net.pixaurora.kitten_heart.impl.error.KitTunesException;
 import net.pixaurora.kitten_heart.impl.error.ScrobblerParsingException;
 import net.pixaurora.kitten_heart.impl.network.Encryption;
 import net.pixaurora.kitten_heart.impl.network.XMLHelper;
-import net.pixaurora.kitten_heart.impl.scrobble.ScrobbleInfo;
 import net.pixaurora.kitten_heart.impl.scrobble.ScrobblerType;
 
 public class LastFMScrobbler implements Scrobbler {
@@ -47,43 +47,42 @@ public class LastFMScrobbler implements Scrobbler {
     }
 
     @Override
-    public String username(Client client) {
+    public String username() {
         return this.session.name;
     }
 
     @Override
-    public void startScrobbling(Client client, ScrobbleInfo track) throws KitTunesException {
+    public void startScrobbling(Client client, ListenRecord record) throws KitTunesException {
         Map<String, String> query = new HashMap<>();
 
         query.put("method", "track.updateNowPlaying");
 
-        query.put("artist", track.artistTitle());
-        query.put("track", track.trackTitle());
+        query.put("artist", record.track().artist().name());
+        query.put("track", record.track().name());
         query.put("api_key", this.apiKey());
         query.put("sk", this.session.key);
 
-        if (track.albumTitle().isPresent()) {
-            query.put("album", track.albumTitle().get());
+        if (record.album().isPresent()) {
+            query.put("album", record.album().get().name());
         }
 
         this.submitScrobble(client, this.addSignature(query));
     }
 
     @Override
-    public void completeScrobbling(Client client, ScrobbleInfo track) throws KitTunesException {
+    public void completeScrobbling(Client client, ListenRecord record) throws KitTunesException {
         Map<String, String> query = new HashMap<>();
 
         query.put("method", "track.scrobble");
 
-        query.put("artist", track.artistTitle());
-        query.put("track", track.trackTitle());
-        query.put("timestamp", String.valueOf(track.startTime().getEpochSecond()));
+        query.put("artist", record.track().artist().name());
+        query.put("track", record.track().name());
+        query.put("timestamp", String.valueOf(record.timestamp().getEpochSecond()));
         query.put("api_key", this.apiKey());
         query.put("sk", this.session.key);
 
-        Optional<String> albumTitle = track.albumTitle();
-        if (albumTitle.isPresent()) {
-            query.put("album", albumTitle.get());
+        if (record.album().isPresent()) {
+            query.put("album", record.album().get().name());
         }
 
         this.submitScrobble(client, this.addSignature(query));

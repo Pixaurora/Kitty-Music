@@ -14,7 +14,7 @@ import com.google.gson.JsonSerializationContext;
 import net.pixaurora.catculator.api.http.Client;
 import net.pixaurora.kitten_heart.impl.KitTunes;
 import net.pixaurora.kitten_heart.impl.error.KitTunesException;
-import net.pixaurora.kitten_heart.impl.scrobble.ScrobbleInfo;
+import net.pixaurora.kitten_heart.impl.music.history.ListenRecord;
 import net.pixaurora.kitten_heart.impl.scrobble.SimpleScrobbler;
 import net.pixaurora.kitten_heart.impl.scrobble.scrobbler.Scrobbler;
 
@@ -23,6 +23,10 @@ public class ScrobblerCache implements SimpleScrobbler {
 
     public ScrobblerCache(List<Scrobbler> scrobblers) {
         this.scrobblers = new ArrayList<>(scrobblers);
+    }
+
+    public static ScrobblerCache defaults() {
+        return new ScrobblerCache(new ArrayList<>());
     }
 
     public List<Scrobbler> scrobblers() {
@@ -34,13 +38,16 @@ public class ScrobblerCache implements SimpleScrobbler {
     }
 
     @Override
-    public void startScrobbling(Client client, ScrobbleInfo track) {
+    public void startScrobbling(Client client, ListenRecord track) {
         this.handleScrobbling(scrobbler -> scrobbler.startScrobbling(client, track));
     }
 
     @Override
-    public void completeScrobbling(Client client, ScrobbleInfo track) {
-        this.handleScrobbling(scrobbler -> scrobbler.completeScrobbling(client, track));
+    public void completeScrobbling(Client client, ListenRecord track) {
+        this.handleScrobbling(scrobbler -> {
+            scrobbler.completeScrobbling(client, track);
+            track.succeededFor(scrobbler);
+        });
     }
 
     private void handleScrobbling(ScrobbleAction action) {

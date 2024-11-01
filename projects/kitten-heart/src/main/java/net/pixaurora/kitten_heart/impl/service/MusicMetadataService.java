@@ -13,6 +13,8 @@ import net.pixaurora.kit_tunes.api.resource.ResourcePath;
 public interface MusicMetadataService {
     public void load(List<Path> albumFiles, List<Path> artistFiles, List<Path> trackFiles);
 
+    public Optional<Album> getAlbum(ResourcePath path);
+
     public Optional<Artist> getArtist(ResourcePath path);
 
     public Optional<Track> getTrack(ResourcePath path);

@@ -11,6 +11,9 @@ import com.google.gson.annotations.SerializedName;
 import net.pixaurora.kit_tunes.api.music.Album;
 import net.pixaurora.kit_tunes.api.music.Track;
 import net.pixaurora.kit_tunes.api.resource.ResourcePath;
+import net.pixaurora.kitten_heart.impl.config.DualSerializer;
+import net.pixaurora.kitten_heart.impl.config.DualSerializerFromString;
+import net.pixaurora.kitten_heart.impl.music.metadata.MusicMetadata;
 import net.pixaurora.kitten_heart.impl.resource.ResourcePathImpl;
 import net.pixaurora.kitten_heart.impl.resource.TransformsTo;
 import net.pixaurora.kitten_heart.impl.util.Pair;
@@ -77,6 +80,28 @@ public class AlbumImpl implements Album {
             }
 
             return Pair.of(new AlbumImpl(path, name, Optional.ofNullable(this.albumArtPath), tracks), includedTracks);
+        }
+    }
+
+    public static class FromPath implements TransformsTo<Album> {
+        public static final DualSerializer<FromPath> SERIALIZER = new DualSerializerFromString<>(
+                album -> album.path.representation(),
+                representation -> new FromPath(ResourcePathImpl.fromString(representation)));
+
+        private final ResourcePath path;
+
+        public FromPath(ResourcePath path) {
+            this.path = path;
+        }
+
+        @Override
+        public Album transform(ResourcePath path) {
+            return transform();
+        }
+
+        public Album transform() {
+            return MusicMetadata.getAlbum(this.path).orElseThrow(
+                    () -> new RuntimeException("No Track found with path `" + this.path.representation() + "`!"));
         }
     }
 }

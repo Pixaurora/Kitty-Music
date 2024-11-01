@@ -33,6 +33,10 @@ public final class MusicMetadata {
         }
     }
 
+    public static Optional<Album> getAlbum(ResourcePath path) {
+        return impl().getAlbum(path);
+    }
+
     public static Optional<Artist> getArtist(ResourcePath path) {
         return impl().getArtist(path);
     }

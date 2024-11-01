@@ -54,13 +54,13 @@ public class ArtistImpl implements Artist {
 
     public static class FromPath implements TransformsTo<Artist> {
         public static final DualSerializer<FromPath> SERIALIZER = new DualSerializerFromString<>(
-                artist -> artist.artistPath.representation(),
+                artist -> artist.path.representation(),
                 representation -> new FromPath(ResourcePathImpl.fromString(representation)));
 
-        private final ResourcePath artistPath;
+        private final ResourcePath path;
 
-        public FromPath(ResourcePath artistPath) {
-            this.artistPath = artistPath;
+        public FromPath(ResourcePath path) {
+            this.path = path;
         }
 
         @Override
@@ -69,13 +69,8 @@ public class ArtistImpl implements Artist {
         }
 
         public Artist transform() {
-            Optional<Artist> artist = MusicMetadata.getArtist(this.artistPath);
-
-            if (artist.isPresent()) {
-                return artist.get();
-            } else {
-                throw new RuntimeException("No Track found with path `" + artistPath.representation() + "`!");
-            }
+            return MusicMetadata.getArtist(this.path).orElseThrow(
+                    () -> new RuntimeException("No Track found with path `" + this.path.representation() + "`!"));
         }
     }
 }

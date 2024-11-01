@@ -5,7 +5,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -151,13 +150,8 @@ public class TrackImpl implements Track {
         }
 
         public Track transform() {
-            Optional<Track> track = MusicMetadata.getTrack(this.path);
-
-            if (track.isPresent()) {
-                return track.get();
-            } else {
-                throw new RuntimeException("No Track found with path `" + path.representation() + "`!");
-            }
+            return MusicMetadata.getTrack(this.path).orElseThrow(
+                    () -> new RuntimeException("No Track found with path `" + this.path.representation() + "`!"));
         }
     }
 }
