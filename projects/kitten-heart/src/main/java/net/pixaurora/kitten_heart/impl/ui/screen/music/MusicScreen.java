@@ -18,7 +18,6 @@ import net.pixaurora.kitten_cube.impl.ui.screen.align.AlignmentStrategy;
 import net.pixaurora.kitten_cube.impl.ui.texture.GuiTexture;
 import net.pixaurora.kitten_cube.impl.ui.texture.Texture;
 import net.pixaurora.kitten_cube.impl.ui.widget.StaticTexture;
-import net.pixaurora.kitten_cube.impl.ui.widget.button.RectangularButton;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.PushableTextLines;
 import net.pixaurora.kitten_heart.impl.EventHandling;
 import net.pixaurora.kitten_heart.impl.KitTunes;
@@ -26,6 +25,7 @@ import net.pixaurora.kitten_heart.impl.music.control.MusicControls;
 import net.pixaurora.kitten_heart.impl.music.control.PlaybackState;
 import net.pixaurora.kitten_heart.impl.music.progress.PlayingSong;
 import net.pixaurora.kitten_heart.impl.ui.screen.KitTunesScreenTemplate;
+import net.pixaurora.kitten_heart.impl.ui.widget.PauseButton;
 import net.pixaurora.kitten_heart.impl.ui.widget.Timer;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressBar;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressBarTileSet;
@@ -127,19 +127,22 @@ public class MusicScreen extends KitTunesScreenTemplate {
             songInfo.get().push(Component.literal("No track found :("), Color.RED);
         }
 
-        WidgetContainer<RectangularButton> pauseButton = this
+        WidgetContainer<PauseButton> pauseButton = this
                 .addWidget(
-                        RectangularButton.vanillaButton(Point.of(0, 30), Component.literal("pause/play"), (button) -> {
-                            MusicControls controls = song.controls();
+                        new PauseButton(
+                                () -> song.controls().playbackState(),
+                                (button) -> {
+                                    MusicControls controls = song.controls();
 
-                            PlaybackState state = controls.playbackState();
+                                    PlaybackState state = controls.playbackState();
 
-                            if (state == PlaybackState.PAUSED) {
-                                controls.unpause();
-                            } else if (state == PlaybackState.PLAYING) {
-                                controls.pause();
-                            }
-                        }));
+                                    if (state == PlaybackState.PAUSED) {
+                                        controls.unpause();
+                                    } else if (state == PlaybackState.PLAYING) {
+                                        controls.pause();
+                                    }
+                                },
+                                Point.of(0, 0)));
 
         return new MusicDisplayMode(song, Arrays.asList(progressBar, timer, albumArt, songInfo, pauseButton));
     }
