@@ -105,8 +105,9 @@ public class ListenRecord {
             TrackImpl.FromPath trackFromPath = context.deserialize(object.get("track"), TrackImpl.FromPath.class);
             Track track = trackFromPath.transform();
 
-            Optional<Album> album = Optional.ofNullable(object.get("album"))
+            Optional<AlbumImpl.FromPath> albumFromPath = Optional.ofNullable(object.get("album"))
                     .map(album0 -> context.deserialize(album0, AlbumImpl.FromPath.class));
+            Optional<Album> album = albumFromPath.map(AlbumImpl.FromPath::transform);
 
             Instant timestamp = context.deserialize(object.get("timestamp"), Instant.class);
 
@@ -119,7 +120,8 @@ public class ListenRecord {
                 succeededScrobblers.add(context.deserialize(scrobblerId, ListenRecord.class));
             }
 
-            return new ListenRecord(track, album, timestamp, listenedDuration, fullDuration, succeededScrobblers);
+            return new ListenRecord(track, album, timestamp, listenedDuration, fullDuration,
+                    succeededScrobblers);
         }
     }
 }

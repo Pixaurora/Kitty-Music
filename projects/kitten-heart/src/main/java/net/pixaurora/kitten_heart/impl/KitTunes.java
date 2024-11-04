@@ -37,10 +37,8 @@ public class KitTunes {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(Constants.MOD_ID);
 
-    public static final ConfigManager<ScrobblerCache> SCROBBLER_CACHE = new ConfigManager<>(
-            Constants.SCROBBLER_CACHE_PATH, ScrobblerCache.class, ScrobblerCache::defaults);
-    public static final ConfigManager<ListenHistory> LISTEN_HISTORY = new ConfigManager<>(Constants.LISTEN_HISTORY_PATH,
-            ListenHistory.class, ListenHistory::defaults);
+    public static ConfigManager<ScrobblerCache> SCROBBLER_CACHE;
+    public static ConfigManager<ListenHistory> LISTEN_HISTORY;
 
     public static final MinecraftUICompat UI_LAYER = ServiceLoading.loadJustOneOrThrow(MinecraftUICompat.class);
 
@@ -58,6 +56,11 @@ public class KitTunes {
         // doing this can sometimes cause issues.
         MusicMetadata.init(MusicMetadataLoader.albumFiles(), MusicMetadataLoader.artistFiles(),
                 MusicMetadataLoader.trackFiles());
+
+        SCROBBLER_CACHE = new ConfigManager<>(
+                Constants.SCROBBLER_CACHE_PATH, ScrobblerCache.class, ScrobblerCache::defaults);
+        LISTEN_HISTORY = new ConfigManager<>(Constants.LISTEN_HISTORY_PATH,
+                ListenHistory.class, ListenHistory::defaults);
     }
 
     public static void tick() {
