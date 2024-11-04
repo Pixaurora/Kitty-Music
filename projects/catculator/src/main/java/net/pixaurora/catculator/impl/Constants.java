@@ -11,5 +11,5 @@ public class Constants {
     public static final String NATIVES_VERSION = "0.2.0";
     public static final String NATIVES_DIRECTORY_PROPERTY = "catculator.natives_path";
 
-    public static final Path NATIVES_CACHE_DIR = QuiltLoader.getCacheDir().resolve(PARENT_MOD_ID);
+    public static final Path NATIVES_CACHE_DIR = QuiltLoader.getGlobalCacheDir().resolve(PARENT_MOD_ID);
 }
