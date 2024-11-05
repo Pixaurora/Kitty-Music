@@ -117,7 +117,7 @@ public class ListenRecord {
 
             List<ScrobblerId> succeededScrobblers = new ArrayList<>();
             for (JsonElement scrobblerId : object.get("succeeded").getAsJsonArray()) {
-                succeededScrobblers.add(context.deserialize(scrobblerId, ListenRecord.class));
+                succeededScrobblers.add(context.deserialize(scrobblerId, ScrobblerId.class));
             }
 
             return new ListenRecord(track, album, timestamp, listenedDuration, fullDuration,
