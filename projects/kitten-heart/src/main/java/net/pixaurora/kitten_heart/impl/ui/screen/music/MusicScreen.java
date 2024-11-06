@@ -147,8 +147,6 @@ public class MusicScreen extends KitTunesScreenTemplate {
                                 Point.of(0, 0)))
                 .customizedAlignment(progressBar.relativeAlignment(AlignedToCorner.BOTTOM_LEFT));
 
-        KitTunes.LOGGER.info("" + pauseButton.customizedAligner().get().align(Point.ZERO));
-
         return new MusicDisplayMode(song, Arrays.asList(progressBar, timer, albumArt, songInfo, pauseButton));
     }
 

@@ -1,11 +1,10 @@
 package net.pixaurora.kitten_cube.impl.ui.screen;
 
 import java.util.Optional;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
-import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.AlignmentStrategy;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.PointManager;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.RelativeAlignment;
@@ -13,13 +12,14 @@ import net.pixaurora.kitten_cube.impl.ui.widget.Widget;
 
 public class WidgetContainer<T extends Widget> {
     private final T widget;
-    private Optional<Size> window;
+    private final ScreenTemplate screen;
+
     private Optional<AlignmentStrategy> customizedAlignment;
     private Optional<PointManager> aligner;
 
-    public WidgetContainer(T widget) {
+    public WidgetContainer(T widget, ScreenTemplate screen) {
         this.widget = widget;
-        this.window = Optional.empty();
+        this.screen = screen;
         this.customizedAlignment = Optional.empty();
         this.aligner = Optional.empty();
     }
@@ -40,35 +40,39 @@ public class WidgetContainer<T extends Widget> {
     }
 
     public AlignmentStrategy relativeAlignment(AlignedToCorner alignment) {
-        return new RelativeAlignment(this.customizedAlignment.orElse(Alignment.TOP_LEFT),
-                alignment.offset.apply(this.widget.pos(), this.widget.size()));
+        return new RelativeAlignment(this.customizedAlignment().orElse(this.screen.alignmentMethod()), alignment.offset,
+                this.widget);
     }
 
     public void onWindowUpdate(Size window) {
-        this.window = Optional.of(window);
         this.widget.onWindowUpdate(window);
 
         this.updateAlignment();
     }
 
-    private void updateAlignment() {
-        Size window = this.window.orElseThrow(RuntimeException::new);
+    private Optional<AlignmentStrategy> customizedAlignment() {
+        if (this.customizedAlignment.isPresent()) {
+            return this.customizedAlignment;
+        } else {
+            return this.widget.alignmentMethod();
+        }
+    }
 
-        Optional<AlignmentStrategy> alignment = this.customizedAlignment.isPresent() ? this.customizedAlignment
-                : this.widget.alignmentMethod();
-        this.aligner = alignment.map(alignment0 -> new PointManager(alignment0, window));
+    private void updateAlignment() {
+        Size window = this.screen.window();
+        this.aligner = this.customizedAlignment().map(alignment -> new PointManager(alignment, window));
     }
 
     public static enum AlignedToCorner {
-        TOP_LEFT((widgetPos, widgetSize) -> widgetPos),
-        TOP_RIGHT((widgetPos, widgetSize) -> widgetPos.offset(widgetSize.x(), 0)),
-        BOTTOM_LEFT((widgetPos, widgetSize) -> widgetPos.offset(0, widgetSize.y())),
-        BOTTOM_RIGHT((widgetPos, widgetSize) -> widgetPos.offset(widgetSize)),
+        TOP_LEFT(widget -> widget.pos()),
+        TOP_RIGHT(widget -> widget.pos().offset(widget.size().width(), 0)),
+        BOTTOM_LEFT(widget -> widget.pos().offset(0, widget.size().height())),
+        BOTTOM_RIGHT(widget -> widget.pos().offset(widget.size())),
         ;
 
-        private final BiFunction<Point, Size, Point> offset;
+        private final Function<Widget, Point> offset;
 
-        private AlignedToCorner(BiFunction<Point, Size, Point> offset) {
+        private AlignedToCorner(Function<Widget, Point> offset) {
             this.offset = offset;
         }
 
