@@ -13,6 +13,7 @@ import net.pixaurora.kitten_cube.impl.text.Color;
 import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.screen.Screen;
 import net.pixaurora.kitten_cube.impl.ui.screen.WidgetContainer;
+import net.pixaurora.kitten_cube.impl.ui.screen.WidgetContainer.AlignedToCorner;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.AlignmentStrategy;
 import net.pixaurora.kitten_cube.impl.ui.texture.GuiTexture;
@@ -98,7 +99,8 @@ public class MusicScreen extends KitTunesScreenTemplate {
 
     public DisplayMode createMusicDisplay(PlayingSong song) {
         WidgetContainer<ProgressBar> progressBar = this
-                .addWidget(new ProgressBar(Point.of(0, -24), song, PLAYING_SONG_TILE_SET));
+                .addWidget(new ProgressBar(Point.of(0, -24), song, PLAYING_SONG_TILE_SET))
+                .customizedAlignment(Alignment.CENTER_BOTTOM);
 
         WidgetContainer<Timer> timer = this.addWidget(new Timer(Point.of(0, -13), song))
                 .customizedAlignment(Alignment.CENTER_BOTTOM);
@@ -142,7 +144,10 @@ public class MusicScreen extends KitTunesScreenTemplate {
                                         controls.pause();
                                     }
                                 },
-                                Point.of(0, 0)));
+                                Point.of(0, 0)))
+                .customizedAlignment(progressBar.relativeAlignment(AlignedToCorner.BOTTOM_LEFT));
+
+        KitTunes.LOGGER.info("" + pauseButton.customizedAligner().get().align(Point.ZERO));
 
         return new MusicDisplayMode(song, Arrays.asList(progressBar, timer, albumArt, songInfo, pauseButton));
     }

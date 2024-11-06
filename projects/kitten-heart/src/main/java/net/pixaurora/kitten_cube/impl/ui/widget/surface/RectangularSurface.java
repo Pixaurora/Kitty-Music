@@ -21,8 +21,14 @@ public class RectangularSurface implements WidgetSurface {
         return new RectangularSurface(startPos, size);
     }
 
-    public Point startPos() {
+    @Override
+    public Point pos() {
         return this.startPos;
+    }
+
+    @Override
+    public Size size() {
+        return this.endPos.offset(this.startPos.scaledBy(-1)).toSize();
     }
 
     @Override

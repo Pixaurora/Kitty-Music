@@ -5,11 +5,11 @@ import net.pixaurora.kitten_cube.impl.text.Color;
 import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.controls.MouseButton;
 import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
-import net.pixaurora.kitten_cube.impl.ui.widget.Widget;
+import net.pixaurora.kitten_cube.impl.ui.widget.IncorporealWidget;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.PushableTextLines;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressProvider;
 
-public class Timer implements Widget {
+public class Timer implements IncorporealWidget {
     private final PushableTextLines text;
     private final ProgressProvider progress;
 

@@ -12,6 +12,7 @@ import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.AlignmentStrategy;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.PointManager;
 import net.pixaurora.kitten_cube.impl.ui.widget.Widget;
+import net.pixaurora.kitten_heart.impl.KitTunes;
 
 public abstract class ScreenTemplate implements Screen {
     private boolean initializedWidgets = false;
@@ -39,6 +40,8 @@ public abstract class ScreenTemplate implements Screen {
     @Override
     public final void init(Size window) {
         this.window = window;
+
+        KitTunes.LOGGER.info("Window: " + this.window);
 
         if (!this.initializedWidgets) {
             this.initializedWidgets = true;

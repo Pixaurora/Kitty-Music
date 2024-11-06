@@ -1,6 +1,7 @@
 package net.pixaurora.kitten_cube.impl.ui.widget;
 
 import net.pixaurora.kitten_cube.impl.math.Point;
+import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.ui.widget.surface.WidgetSurface;
 
 /**
@@ -11,5 +12,13 @@ public interface BasicWidget extends Widget {
 
     public default boolean isWithinBounds(Point pos) {
         return this.surface().isWithinBounds(pos);
+    }
+
+    public default Point pos() {
+        return this.surface().pos();
+    }
+
+    public default Size size() {
+        return this.surface().size();
     }
 }

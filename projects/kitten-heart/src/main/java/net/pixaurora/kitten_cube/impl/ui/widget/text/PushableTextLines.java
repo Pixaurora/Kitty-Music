@@ -15,10 +15,10 @@ import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
 import net.pixaurora.kitten_cube.impl.ui.texture.GuiTexture;
 import net.pixaurora.kitten_cube.impl.ui.tile.InnerTileGrid;
 import net.pixaurora.kitten_cube.impl.ui.tile.PositionedInnerTile;
-import net.pixaurora.kitten_cube.impl.ui.widget.Widget;
+import net.pixaurora.kitten_cube.impl.ui.widget.IncorporealWidget;
 import net.pixaurora.kitten_heart.impl.KitTunes;
 
-public class PushableTextLines implements Widget {
+public class PushableTextLines implements IncorporealWidget {
     private static final TextLinesBackground REGULAR_BACKGROUND = new TextLinesBackground(Point.of(7, 5),
             new InnerTileGrid(
                     GuiTexture.of(KitTunes.resource("textures/gui/sprites/widget/textbox.png"), Size.of(20, 17)),

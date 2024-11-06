@@ -11,6 +11,10 @@ public interface Point extends Vec2Int {
         return Point.of((this.x() + other.x()) / 2, (this.y() + other.y()) / 2);
     }
 
+    public default Size toSize() {
+        return Size.of(this.x(), this.y());
+    }
+
     // Functions in common with Size
 
     public default Point offset(Vec2Int by) {

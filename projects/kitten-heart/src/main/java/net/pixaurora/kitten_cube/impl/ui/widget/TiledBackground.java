@@ -12,7 +12,7 @@ import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.AlignmentStrategy;
 import net.pixaurora.kitten_cube.impl.ui.texture.GuiTexture;
 
-public class TiledBackground implements Widget {
+public class TiledBackground implements IncorporealWidget {
     private final GuiTexture texture;
     private List<Point> posToDrawAt;
 

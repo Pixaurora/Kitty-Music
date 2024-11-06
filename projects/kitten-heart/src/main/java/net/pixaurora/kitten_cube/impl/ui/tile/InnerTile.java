@@ -27,6 +27,14 @@ public class InnerTile {
         return this.size;
     }
 
+    public int height() {
+        return this.size.height();
+    }
+
+    public int width() {
+        return this.size.width();
+    }
+
     public PositionedInnerTile atPos(Point pos) {
         return new PositionedInnerTile(pos, this);
     }

@@ -22,7 +22,7 @@ public class StaticTexture implements BasicWidget {
 
     @Override
     public void draw(GuiDisplay gui, Point mousePos) {
-        gui.draw(this.texture, this.surface.startPos());
+        gui.draw(this.texture, this.surface.pos());
     }
 
     public WidgetSurface surface() {

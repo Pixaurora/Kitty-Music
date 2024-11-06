@@ -8,8 +8,6 @@ import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.ui.controls.MouseButton;
 import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
-import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
-import net.pixaurora.kitten_cube.impl.ui.screen.align.AlignmentStrategy;
 import net.pixaurora.kitten_cube.impl.ui.tile.InnerTile;
 import net.pixaurora.kitten_cube.impl.ui.tile.PositionedInnerTile;
 import net.pixaurora.kitten_cube.impl.ui.tile.TilePosition;
@@ -23,6 +21,9 @@ public class ProgressBar implements Widget {
 
     private final ProgressProvider progressProvider;
     private final ProgressBarTileSets tilesets;
+
+    private Point topLeftPoint;
+    private Size size;
 
     public ProgressBar(Point startPos, ProgressProvider progressProvider, ProgressBarTileSets tilesets) {
         this.startPos = startPos;
@@ -103,7 +104,13 @@ public class ProgressBar implements Widget {
         int middleTileCount = (barWidth - (tileSet.left().size().width() + tileSet.right().size().width()))
                 / tileSet.middle().size().width();
 
-        Point placement = this.startPos.offset(-barWidth / 2, 0);
+        this.topLeftPoint = this.startPos.offset(-barWidth / 2, 0);
+        this.size = Size.of(
+                tileSet.left().height() + middleTileCount * tileSet.middle().height() + tileSet.right().width(),
+                tileSet.left().height());
+
+        Point placement = this.topLeftPoint;
+
         int goalX = progressWidth - barWidth / 2;
 
         for (TilePosition tilePosition : TilePosition.values()) {
@@ -144,13 +151,18 @@ public class ProgressBar implements Widget {
         return false;
     }
 
-    @Override
-    public Optional<AlignmentStrategy> alignmentMethod() {
-        return Optional.of(Alignment.CENTER_BOTTOM);
-    }
-
     private static interface TilePlacementMethod {
         public Optional<PositionedInnerTile> place(InnerTile tile, Point at, int goalX, boolean startsBeforeGoal,
                 boolean endsBeforeGoal);
+    }
+
+    @Override
+    public Point pos() {
+        return this.topLeftPoint;
+    }
+
+    @Override
+    public Size size() {
+        return this.size;
     }
 }
