@@ -66,6 +66,19 @@ public class EventHandling {
 
             MAIN_THREAD_TASKS.clear();
         }
+
+        synchronized (PLAYING_TRACKS) {
+            for (PlayingSong song : PLAYING_TRACKS.values()) {
+                if (song.sentMiddleEvent()) {
+                    continue;
+                }
+
+                if (song.canSendMiddleEvent()) {
+                    processEvent(listener -> listener
+                            .onTrackMiddleReached(new TrackEventImpl(song.path(), song.track(), song.progress())));
+                }
+            }
+        }
     }
 
     public static void addMainThreadTask(Runnable task) {

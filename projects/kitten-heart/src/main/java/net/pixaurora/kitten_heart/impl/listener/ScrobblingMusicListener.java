@@ -1,9 +1,9 @@
 package net.pixaurora.kitten_heart.impl.listener;
 
 import java.io.IOException;
-import java.time.Duration;
 
 import net.pixaurora.kit_tunes.api.event.TrackEndEvent;
+import net.pixaurora.kit_tunes.api.event.TrackMiddleEvent;
 import net.pixaurora.kit_tunes.api.event.TrackStartEvent;
 import net.pixaurora.kit_tunes.api.listener.MusicEventListener;
 import net.pixaurora.kit_tunes.api.music.ListeningProgress;
@@ -28,28 +28,24 @@ public class ScrobblingMusicListener implements MusicEventListener {
     }
 
     @Override
+    public void onTrackMiddleReached(TrackMiddleEvent event) {
+        if (!event.track().isPresent()) {
+            return;
+        }
+
+        ListenRecord record = new ListenRecord(event.track().get(), event.progress());
+
+        KitTunes.SCROBBLER_CACHE
+                .execute(scrobblers -> scrobblers.completeScrobbling(KitTunes.CLIENT, record));
+    }
+
+    @Override
     public void onTrackEnd(TrackEndEvent event) {
         if (!event.track().isPresent()) {
             return;
         }
 
-        Track track = event.track().get();
-        ListeningProgress progress = event.progress();
-
-        ListenRecord record = new ListenRecord(track, progress);
-
-        Duration requiredLength = track.duration().dividedBy(2);
-        boolean longEnoughToScrobble = progress.amountPlayed().compareTo(requiredLength) > 0;
-
-        if (longEnoughToScrobble) {
-            KitTunes.SCROBBLER_CACHE
-                    .execute(scrobblers -> scrobblers.completeScrobbling(KitTunes.CLIENT, record));
-        } else {
-            float amountPlayed = (float) progress.amountPlayed().toMillis() / 1000;
-            float amountRequired = (float) requiredLength.toMillis() / 1000;
-            KitTunes.LOGGER.info("Skipping scrobbling " + track.name() + " because it only played for " +
-                    amountPlayed + " out of " + amountRequired + " seconds!");
-        }
+        ListenRecord record = new ListenRecord(event.track().get(), event.progress());
 
         KitTunes.LISTEN_HISTORY.execute(history -> history.record(record));
         try {
@@ -58,5 +54,4 @@ public class ScrobblingMusicListener implements MusicEventListener {
             KitTunes.LOGGER.error("Failed to save listen history while scrobbling!", e);
         }
     }
-
 }
