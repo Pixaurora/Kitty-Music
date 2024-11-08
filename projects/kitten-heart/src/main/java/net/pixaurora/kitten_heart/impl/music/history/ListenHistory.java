@@ -6,12 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import com.google.gson.annotations.SerializedName;
+
+import net.pixaurora.kit_tunes.api.music.history.ListenRecord;
+
 public class ListenHistory {
     private final List<ListenRecord> history;
-    private Duration timespanStored;
+    @SerializedName("max_retention")
+    private Duration maxRetention;
 
-    public ListenHistory(Duration timespanStored, List<ListenRecord> history) {
-        this.timespanStored = timespanStored;
+    public ListenHistory(Duration maxRetention, List<ListenRecord> history) {
+        this.maxRetention = maxRetention;
         this.history = history;
     }
 
@@ -23,12 +28,12 @@ public class ListenHistory {
         return history;
     }
 
-    public Duration timespanStored() {
-        return timespanStored;
+    public Duration maxRetention() {
+        return this.maxRetention;
     }
 
     public void timespanStored(Duration newValue) {
-        this.timespanStored = newValue;
+        this.maxRetention = newValue;
         this.clearOldHistory();
     }
 
@@ -40,7 +45,7 @@ public class ListenHistory {
     private void clearOldHistory() {
         Predicate<ListenRecord> isTooOld = record -> Duration
                 .between(record.timestamp(), Instant.now())
-                .compareTo(this.timespanStored) > 0;
+                .compareTo(this.maxRetention) > 0;
 
         this.history.removeIf(isTooOld);
     }

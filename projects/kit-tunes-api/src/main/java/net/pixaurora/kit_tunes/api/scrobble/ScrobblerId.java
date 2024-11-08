@@ -1,4 +1,4 @@
-package net.pixaurora.kitten_heart.impl.scrobble;
+package net.pixaurora.kit_tunes.api.scrobble;
 
 public class ScrobblerId {
     private final String username;

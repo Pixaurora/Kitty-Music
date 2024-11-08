@@ -13,9 +13,9 @@ import net.pixaurora.catculator.api.error.ClientResponseException;
 import net.pixaurora.catculator.api.http.Client;
 import net.pixaurora.catculator.api.http.RequestBuilder;
 import net.pixaurora.catculator.api.http.Response;
+import net.pixaurora.kit_tunes.api.music.history.ListenRecord;
 import net.pixaurora.kitten_heart.impl.KitTunes;
 import net.pixaurora.kitten_heart.impl.error.UnhandledKitTunesException;
-import net.pixaurora.kitten_heart.impl.music.history.ListenRecord;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

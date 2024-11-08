@@ -12,9 +12,9 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 
 import net.pixaurora.catculator.api.http.Client;
+import net.pixaurora.kit_tunes.api.music.history.ListenRecord;
 import net.pixaurora.kitten_heart.impl.KitTunes;
 import net.pixaurora.kitten_heart.impl.error.KitTunesException;
-import net.pixaurora.kitten_heart.impl.music.history.ListenRecord;
 import net.pixaurora.kitten_heart.impl.scrobble.SimpleScrobbler;
 import net.pixaurora.kitten_heart.impl.scrobble.scrobbler.Scrobbler;
 
@@ -46,7 +46,7 @@ public class ScrobblerCache implements SimpleScrobbler {
     public void completeScrobbling(Client client, ListenRecord track) {
         this.handleScrobbling(scrobbler -> {
             scrobbler.completeScrobbling(client, track);
-            track.succeededFor(scrobbler);
+            track.succeededFor(scrobbler.id());
         });
     }
 

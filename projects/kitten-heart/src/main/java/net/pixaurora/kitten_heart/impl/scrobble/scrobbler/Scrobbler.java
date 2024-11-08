@@ -2,9 +2,9 @@ package net.pixaurora.kitten_heart.impl.scrobble.scrobbler;
 
 import java.util.Arrays;
 
+import net.pixaurora.kit_tunes.api.scrobble.ScrobblerId;
 import net.pixaurora.kitten_heart.impl.config.dispatch.DispatchGroup;
 import net.pixaurora.kitten_heart.impl.config.dispatch.SpecifiesType;
-import net.pixaurora.kitten_heart.impl.scrobble.ScrobblerId;
 import net.pixaurora.kitten_heart.impl.scrobble.ScrobblerType;
 import net.pixaurora.kitten_heart.impl.scrobble.SimpleScrobbler;
 

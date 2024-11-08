@@ -6,22 +6,17 @@ import net.pixaurora.kit_tunes.api.event.TrackEndEvent;
 import net.pixaurora.kit_tunes.api.event.TrackMiddleEvent;
 import net.pixaurora.kit_tunes.api.event.TrackStartEvent;
 import net.pixaurora.kit_tunes.api.listener.MusicEventListener;
-import net.pixaurora.kit_tunes.api.music.ListeningProgress;
-import net.pixaurora.kit_tunes.api.music.Track;
+import net.pixaurora.kit_tunes.api.music.history.ListenRecord;
 import net.pixaurora.kitten_heart.impl.KitTunes;
-import net.pixaurora.kitten_heart.impl.music.history.ListenRecord;
 
 public class ScrobblingMusicListener implements MusicEventListener {
     @Override
     public void onTrackStart(TrackStartEvent event) {
-        if (!event.track().isPresent()) {
+        if (!event.record().isPresent()) {
             return;
         }
 
-        Track track = event.track().get();
-        ListeningProgress progress = event.progress();
-
-        ListenRecord record = new ListenRecord(track, progress);
+        ListenRecord record = event.record().get();
 
         KitTunes.SCROBBLER_CACHE.execute(
                 scrobblers -> scrobblers.startScrobbling(KitTunes.CLIENT, record));
@@ -29,11 +24,11 @@ public class ScrobblingMusicListener implements MusicEventListener {
 
     @Override
     public void onTrackMiddleReached(TrackMiddleEvent event) {
-        if (!event.track().isPresent()) {
+        if (!event.record().isPresent()) {
             return;
         }
 
-        ListenRecord record = new ListenRecord(event.track().get(), event.progress());
+        ListenRecord record = event.record().get();
 
         KitTunes.SCROBBLER_CACHE
                 .execute(scrobblers -> scrobblers.completeScrobbling(KitTunes.CLIENT, record));
@@ -41,11 +36,11 @@ public class ScrobblingMusicListener implements MusicEventListener {
 
     @Override
     public void onTrackEnd(TrackEndEvent event) {
-        if (!event.track().isPresent()) {
+        if (!event.record().isPresent()) {
             return;
         }
 
-        ListenRecord record = new ListenRecord(event.track().get(), event.progress());
+        ListenRecord record = event.record().get();
 
         KitTunes.LISTEN_HISTORY.execute(history -> history.record(record));
         try {

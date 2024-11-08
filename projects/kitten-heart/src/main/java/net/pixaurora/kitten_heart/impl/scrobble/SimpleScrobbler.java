@@ -1,8 +1,8 @@
 package net.pixaurora.kitten_heart.impl.scrobble;
 
 import net.pixaurora.catculator.api.http.Client;
+import net.pixaurora.kit_tunes.api.music.history.ListenRecord;
 import net.pixaurora.kitten_heart.impl.error.KitTunesException;
-import net.pixaurora.kitten_heart.impl.music.history.ListenRecord;
 
 public interface SimpleScrobbler {
     public void startScrobbling(Client client, ListenRecord track) throws KitTunesException;

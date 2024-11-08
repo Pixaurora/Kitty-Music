@@ -50,7 +50,7 @@ public class EventHandling {
     }
 
     private static void handleTrackEnd(PlayingSong song) {
-        TrackEndEvent event = new TrackEventImpl(song.path(), song.track(), song.progress());
+        TrackEndEvent event = new TrackEventImpl(song);
 
         processEvent(listener -> listener.onTrackEnd(event));
     }
@@ -75,7 +75,7 @@ public class EventHandling {
 
                 if (song.canSendMiddleEvent()) {
                     processEvent(listener -> listener
-                            .onTrackMiddleReached(new TrackEventImpl(song.path(), song.track(), song.progress())));
+                            .onTrackMiddleReached(new TrackEventImpl(song)));
                 }
             }
         }
@@ -123,11 +123,13 @@ public class EventHandling {
             MusicMetadata.asMutable().giveDuration(track.get(), songDuration);
         }
 
+        PlayingSong song = new PlayingSong(path, track, progress, controls);
+
         synchronized (PLAYING_TRACKS) {
-            PLAYING_TRACKS.put(progress, new PlayingSong(path, track, progress, controls));
+            PLAYING_TRACKS.put(progress, song);
         }
 
-        return new TrackEventImpl(path, track, progress);
+        return new TrackEventImpl(song);
     }
 
     private static Duration songDuration(ResourcePath path) throws IOException {
