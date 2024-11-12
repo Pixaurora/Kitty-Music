@@ -1,6 +1,6 @@
 plugins {
     id("kit_tunes.java.17")
-    id("kit_tunes.submodule")
+    id("kit_tunes.modern_submodule")
 }
 
 val modmenu_version = project.property("modmenu_version") as String

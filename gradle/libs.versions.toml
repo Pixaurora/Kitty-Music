@@ -3,6 +3,7 @@ minecraft = "1.20.4"
 quilt_mappings = "1.20.4+build.3"
 
 quilt_loom = "1.8.4"
+ploceus = "1.8.3"
 quilt_loader = "0.26.3"
 
 qsl = "8.0.0-alpha.11+1.20.4"
@@ -17,6 +18,7 @@ mod_publish = "0.7.4"
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 
 quilt_loom = { module = "org.quiltmc:loom", version.ref = "quilt_loom" }
+ploceus = { module = "net.ornithemc:ploceus", version.ref = "ploceus" }
 quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "quilt_loader" }
 
 qsl_resource_loader = { module = "org.quiltmc.qsl.core:resource_loader", version.ref = "qsl"}

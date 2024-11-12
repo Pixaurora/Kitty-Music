@@ -17,13 +17,17 @@ mod {
 }
 
 dependencies {
+    mappings(loom.officialMojangMappings())
+
     include(project(":projects:kit-tunes-api"))
     include(project(":projects:kitten-heart"))
     include(project(":projects:catculator"))
 
+    include(project(":projects:kitten-sounds:b1.7.3"))
     include(project(":projects:kitten-sounds:r1.17.0"))
     include(project(":projects:kitten-sounds:r1.20.3"))
 
+    include(project(":projects:kitten-square:b1.7.3"))
     include(project(":projects:kitten-square:r1.17.0"))
     include(project(":projects:kitten-square:r1.19.0"))
     include(project(":projects:kitten-square:r1.19.3"))

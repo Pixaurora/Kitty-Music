@@ -1,13 +1,13 @@
 plugins {
-    id("kit_tunes.java.17")
-    id("kit_tunes.modern_submodule")
+    id("kit_tunes.java.08")
+    id("kit_tunes.legacy_submodule")
 }
 
 val modmenu_version = project.property("modmenu_version") as String
 
 mod {
     dependencies {
-        required("fabric-resource-loader-v0")
+        required("osl")
         optional("modmenu").versionAbove(modmenu_version)
     }
 
@@ -28,7 +28,6 @@ dependencies {
     implementation(project(":projects:kit-tunes-api"))
     implementation(project(":projects:kitten-heart"))
 
-    modImplementation(libs.qsl.resource.loader)
-
     modImplementation("com.terraformersmc:modmenu:${modmenu_version}")
+    ploceus.dependOsl(project.property("osl_version") as String)
 }
