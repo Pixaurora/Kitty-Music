@@ -55,7 +55,10 @@ public class MusicPolling implements SoundEventListener {
                 return true;
             } else {
                 polledSong.polled().execute(
-                        channel -> polledSong.progress().measureProgress((SongProgressTracker) (Object) channel));
+                        channel -> {
+                            polledSong.progress().measureProgress((SongProgressTracker) (Object) channel);
+                            polledSong.controls().updatePlaybackState(channel);
+                        });
 
                 return false;
             }

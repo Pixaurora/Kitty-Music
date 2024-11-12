@@ -3,10 +3,10 @@ package net.pixaurora.kitten_heart.impl.music.metadata;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.pixaurora.kit_tunes.api.music.Album;
 import net.pixaurora.kit_tunes.api.music.Artist;
@@ -15,14 +15,14 @@ import net.pixaurora.kit_tunes.api.resource.ResourcePath;
 import net.pixaurora.kitten_heart.impl.service.MusicMetadataService;
 
 public class MusicMetadataImpl implements MusicMetadataService, MutableMusicMetadata {
-    private final Map<ResourcePath, Album> albums = new HashMap<>();
-    private final Map<ResourcePath, Artist> artists = new HashMap<>();
-    private final Map<ResourcePath, Track> tracks = new HashMap<>();
+    private final Map<ResourcePath, Album> albums = new ConcurrentHashMap<>();
+    private final Map<ResourcePath, Artist> artists = new ConcurrentHashMap<>();
+    private final Map<ResourcePath, Track> tracks = new ConcurrentHashMap<>();
 
-    private final HashMap<String, Track> trackMatches = new HashMap<>();
-    private final HashMap<ResourcePath, List<Album>> trackToAlbums = new HashMap<>();
+    private final Map<String, Track> trackMatches = new ConcurrentHashMap<>();
+    private final Map<ResourcePath, List<Album>> trackToAlbums = new ConcurrentHashMap<>();
 
-    private final HashMap<ResourcePath, Duration> trackDurations = new HashMap<>();
+    private final Map<ResourcePath, Duration> trackDurations = new ConcurrentHashMap<>();
 
     @Override
     public void add(Album album) {

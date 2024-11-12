@@ -1,9 +1,7 @@
 package net.pixaurora.kitten_sounds.impl;
 
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.mojang.blaze3d.audio.Channel;
 
@@ -13,11 +11,13 @@ import net.pixaurora.kitten_heart.impl.music.control.PlaybackState;
 
 public class MusicControlsImpl implements MusicControls {
     private Optional<ChannelHandle> channel = Optional.empty();
+    private final AtomicReference<PlaybackState> playbackState = new AtomicReference<>(PlaybackState.STOPPED);
 
     public void channel(ChannelHandle channel) {
         this.channel = Optional.of(channel);
     }
 
+    @Override
     public void pause() {
         if (this.channel.isPresent()) {
             this.channel.get().execute(Channel::pause);
@@ -33,26 +33,18 @@ public class MusicControlsImpl implements MusicControls {
 
     @Override
     public PlaybackState playbackState() {
-        if (this.channel.isEmpty() || this.channel.get().isStopped()) {
-            return PlaybackState.STOPPED;
-        }
-
-        CompletableFuture<PlaybackState> playbackState = new CompletableFuture<PlaybackState>().orTimeout(1,
-                TimeUnit.MINUTES);
-
-        this.channel.get().execute(channel -> {
-            if (channel.playing()) {
-                playbackState.complete(PlaybackState.PLAYING);
-            } else {
-                playbackState.complete(PlaybackState.PAUSED);
-            }
-        });
-
-        try {
-            return playbackState.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException("Couldn't get playback state!", e);
-        }
+        return this.playbackState.get();
     }
 
+    public void updatePlaybackState(Channel channel) {
+        this.playbackState.set(computePlaybackState(channel));
+    }
+
+    public PlaybackState computePlaybackState(Channel channel) {
+        if (channel.playing()) {
+            return PlaybackState.PLAYING;
+        } else {
+            return PlaybackState.PAUSED;
+        }
+    }
 }

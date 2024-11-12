@@ -21,7 +21,7 @@ public class PlayingSong implements ProgressProvider {
     private final ListeningProgress progress;
     private final MusicControls controls;
 
-    private boolean hasSentMiddleEvent;
+    private volatile boolean hasSentMiddleEvent;
     private final long middleEventMillis;
 
     public PlayingSong(ResourcePath path, Optional<Track> track, ListeningProgress progress, MusicControls controls) {
@@ -31,6 +31,7 @@ public class PlayingSong implements ProgressProvider {
         this.controls = controls;
         this.middleEventMillis = track.map(Track::duration).map(duration -> duration.toMillis() * 6 / 10)
                 .orElse(Constants.MINIMUM_TIME_TO_SCROBBLE.toMillis());
+        this.hasSentMiddleEvent = false;
 
         if (this.track.isPresent()) {
             Track track0 = track.get();
