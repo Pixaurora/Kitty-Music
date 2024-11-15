@@ -1,11 +1,12 @@
 package net.pixaurora.kitten_square.impl.compat;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screen.Screen;
 import net.pixaurora.kitten_heart.impl.Constants;
 import net.pixaurora.kitten_heart.impl.ui.screen.KitTunesHomeScreen;
 import net.pixaurora.kitten_square.impl.ui.screen.MinecraftScreen;
@@ -18,6 +19,10 @@ public class ModMenuIntegration implements ModMenuApi {
 
     @Override
     public Map<String, ConfigScreenFactory<?>> getProvidedConfigScreenFactories() {
-        return Map.of(Constants.MOD_ID, this::modHomeScreen);
+        Map<String, ConfigScreenFactory<?>> configScreenFactories = new HashMap<>();
+
+        configScreenFactories.put(Constants.MOD_ID, this::modHomeScreen);
+
+        return configScreenFactories;
     }
 }

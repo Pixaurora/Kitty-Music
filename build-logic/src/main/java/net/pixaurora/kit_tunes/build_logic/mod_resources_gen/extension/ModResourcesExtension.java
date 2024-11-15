@@ -25,7 +25,7 @@ public abstract class ModResourcesExtension extends ModInfoExtension {
     }
 
     public String workaroundProperty(String propertyKey) {
-        return propertiesWorkaround.requireString(propertyKey);
+        return this.propertiesWorkaround.requireString(propertyKey);
     }
 
     public Provider<String> nameFromModId() {

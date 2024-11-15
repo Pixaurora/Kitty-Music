@@ -2,6 +2,7 @@ package net.pixaurora.kit_tunes.build_logic.mod_resources_gen;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.UnknownTaskException;
 
 import net.pixaurora.kit_tunes.build_logic.mod_resources_gen.extension.ModResourcesExtension;
 import net.pixaurora.kit_tunes.build_logic.mod_resources_gen.task.CleanModIconTask;
@@ -22,6 +23,11 @@ public class ModResourcesPlugin implements Plugin<Project> {
         var cleanResources = tasks.create("cleanResources");
 
         tasks.named("processResources").configure(task -> task.dependsOn(generateResources));
+        try {
+            tasks.named("genSources").configure(task -> task.dependsOn(generateResources));
+        } catch (UnknownTaskException e) {
+        }
+
         tasks.named("clean").configure(task -> task.dependsOn(cleanResources));
 
         var copyModIcon = tasks.register("copyModIcon", CopyModIconTask.class, modIcon);

@@ -1,7 +1,5 @@
 package net.pixaurora.kitten_square.impl.ui.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.network.chat.Component;
 import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.ui.controls.MouseButton;
@@ -10,13 +8,13 @@ import net.pixaurora.kitten_cube.impl.ui.screen.Screen;
 import net.pixaurora.kitten_square.impl.ui.ConversionCacheImpl;
 import net.pixaurora.kitten_square.impl.ui.display.GuiDisplayImpl;
 
-public class ScreenImpl extends net.minecraft.client.gui.screens.Screen {
+public class ScreenImpl extends net.minecraft.client.gui.screen.Screen {
     private final Screen screen;
 
     private final ConversionCacheImpl conversions;
 
     public ScreenImpl(Screen screen) {
-        super(Component.nullToEmpty(null));
+        super();
 
         this.screen = screen;
 
@@ -31,34 +29,34 @@ public class ScreenImpl extends net.minecraft.client.gui.screens.Screen {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
-        this.renderDirtBackground(0);
-        super.render(poseStack, mouseX, mouseY, delta);
+    public void render(int mouseX, int mouseY, float delta) {
+        this.renderBackground();
+        super.render(mouseX, mouseY, delta);
 
-        GuiDisplay display = new GuiDisplayImpl(poseStack, this.conversions);
+        GuiDisplay display = new GuiDisplayImpl(this.conversions);
         Point mousePos = Point.of(mouseX, mouseY);
 
         this.screen.draw(display, mousePos);
     }
 
-    @Override
-    public void onClose() {
-        this.screen.onExit();
-    }
+    // @Override
+    // public void onClose() {
+    // this.screen.onExit();
+    // }
 
-    @Override
-    public boolean shouldCloseOnEsc() {
-        return true;
-    }
+    // @Override
+    // public boolean shouldCloseOnEsc() {
+    // return true;
+    // }
 
-    @Override
-    public boolean mouseClicked(double x, double y, int button) {
-        Point mousePos = Point.of((int) x, (int) y);
+    // @Override
+    // public boolean mouseClicked(double x, double y, int button) {
+    // Point mousePos = Point.of((int) x, (int) y);
 
-        this.screen.handleClick(mousePos, MouseButton.fromGlfwCode(button));
+    // this.screen.handleClick(mousePos, MouseButton.fromGlfwCode(button));
 
-        return false;
-    }
+    // return false;
+    // }
 
     @Override
     public void tick() {

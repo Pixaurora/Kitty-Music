@@ -29,6 +29,9 @@ public abstract class ModInfoExtension {
     @Input
     public abstract Property<String> getMixinFile();
 
+    @Input
+    public abstract Property<String> getAccessWidener();
+
     public void mixin(String path) {
         var mixinFile = Path.of(path);
         this.getMixinFile().set(mixinFile.toString());

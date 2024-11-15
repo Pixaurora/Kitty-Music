@@ -26,6 +26,11 @@ public class ModJsonSerializer implements JsonSerializer<ModInfoExtension> {
             qmjRoot.addProperty("mixin", mixin.get());
         }
 
+        var accessWidener = modInfo.getAccessWidener();
+        if (accessWidener.isPresent()) {
+            qmjRoot.addProperty("access_widener", accessWidener.get());
+        }
+
         var modmenuBlock = this.createModmenuBlock(modInfo);
         if (modmenuBlock.size() > 0) {
             qmjRoot.add("modmenu", modmenuBlock);

@@ -7,9 +7,9 @@ import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
 import net.pixaurora.kitten_cube.impl.ui.screen.Screen;
 
 public class MinecraftScreen implements Screen {
-    private final net.minecraft.client.gui.screens.Screen parent;
+    private final net.minecraft.client.gui.screen.Screen parent;
 
-    public MinecraftScreen(net.minecraft.client.gui.screens.Screen parent) {
+    public MinecraftScreen(net.minecraft.client.gui.screen.Screen parent) {
         this.parent = parent;
     }
 
@@ -26,7 +26,7 @@ public class MinecraftScreen implements Screen {
     public void handleClick(Point mousePos, MouseButton button) {
     }
 
-    public net.minecraft.client.gui.screens.Screen parent() {
+    public net.minecraft.client.gui.screen.Screen parent() {
         return this.parent;
     }
 }

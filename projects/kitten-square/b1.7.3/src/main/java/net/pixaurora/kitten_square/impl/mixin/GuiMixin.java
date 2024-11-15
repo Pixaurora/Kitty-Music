@@ -5,15 +5,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.minecraft.client.gui.Gui;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.GameGui;
 
-@Mixin(Gui.class)
+@Mixin(GameGui.class)
 public class GuiMixin {
-    // Because we want to show our own notification, we cancel this one so it
-    // doesn't show twice.
-    @Inject(method = "setNowPlaying", at = @At("HEAD"), cancellable = true)
-    private void cancelNowPlayingNotification(Component description, CallbackInfo cInfo) {
-        cInfo.cancel();
-    }
+    // // Because we want to show our own notification, we cancel this one so it
+    // // doesn't show twice.
+    // @Inject(method = "setNowPlaying", at = @At("HEAD"), cancellable = true)
+    // private void cancelNowPlayingNotification(Component description, CallbackInfo
+    // cInfo) {
+    // cInfo.cancel();
+    // }
 }
