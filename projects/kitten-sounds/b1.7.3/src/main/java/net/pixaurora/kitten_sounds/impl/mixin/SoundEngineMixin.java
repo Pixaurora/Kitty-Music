@@ -23,6 +23,15 @@ public class SoundEngineMixin {
         return sound;
     }
 
+    @ModifyExpressionValue(method = "playRecord", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sound/system/Sounds;getRandom(Ljava/lang/String;)Lnet/minecraft/client/sound/system/SoundFile;"))
+    private SoundFile onRecordQueued(SoundFile sound) {
+        if (sound != null) {
+            MusicPolling.onPlaySong(sound, "streaming");
+        }
+
+        return sound;
+    }
+
     /*
      * There's a short time between when we queue a song and it registers as
      * "playing."
