@@ -2,10 +2,9 @@
   "required": true,
   "minVersion": "0.8",
   "package": "net.pixaurora.kitten_sounds.impl.mixin",
-  "compatibilityLevel": "JAVA_16",
+  "compatibilityLevel": "JAVA_8",
   "mixins": [ ],
   "client": [
-    "ChannelMixin",
     "MinecraftMixin",
     "SoundEngineMixin"
   ],

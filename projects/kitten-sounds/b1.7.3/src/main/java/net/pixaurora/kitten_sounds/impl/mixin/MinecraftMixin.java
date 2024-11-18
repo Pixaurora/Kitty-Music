@@ -7,16 +7,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.Minecraft;
 import net.pixaurora.kitten_heart.impl.KitTunes;
-import net.pixaurora.kitten_sounds.impl.MusicPolling;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
     @SuppressWarnings("resource")
     @Inject(method = "<init>", at = @At("TAIL"))
     public void addMusicListener(CallbackInfo ci) {
-        Minecraft client = (Minecraft) (Object) this;
-        client.getSoundManager().addListener(new MusicPolling());
-
         KitTunes.init();
     }
 
@@ -25,7 +21,7 @@ public class MinecraftMixin {
         KitTunes.tick();
     }
 
-    @Inject(method = "destroy", at = @At("HEAD"))
+    @Inject(method = "stop", at = @At("HEAD"))
     public void onStop(CallbackInfo ci) {
         KitTunes.stop();
     }
