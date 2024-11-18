@@ -1,8 +1,6 @@
 package net.pixaurora.kitten_square.impl.ui.display;
 
-import net.minecraft.client.Minecraft;
 import net.pixaurora.kit_tunes.api.resource.ResourcePath;
-import net.pixaurora.kitten_cube.impl.MinecraftClient;
 import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.text.Color;
@@ -10,7 +8,6 @@ import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.TextBox;
 import net.pixaurora.kitten_square.impl.ui.ConversionCacheImpl;
-import net.pixaurora.kitten_square.impl.ui.widget.TextBoxImpl;
 
 public class GuiDisplayImpl implements GuiDisplay {
     private final ConversionCacheImpl conversions;
@@ -18,6 +15,8 @@ public class GuiDisplayImpl implements GuiDisplay {
     public GuiDisplayImpl(ConversionCacheImpl conversions) {
         this.conversions = conversions;
     }
+
+    // TODO: Reimplement methods
 
     @Override
     public void drawTexture(ResourcePath path, Size size, Point pos) {

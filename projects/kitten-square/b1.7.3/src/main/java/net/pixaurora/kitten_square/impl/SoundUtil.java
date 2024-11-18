@@ -6,12 +6,12 @@ package net.pixaurora.kitten_square.impl;
 import net.pixaurora.kitten_cube.impl.ui.sound.Sound;
 
 public class SoundUtil {
-    public static void soundFromInternalID(Sound sound) {
-        // switch (sound) {
-        // case BUTTON_CLICK:
-        // return SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F);
-        // default:
-        // throw new RuntimeException("Sound " + sound.name() + " was not mapped!");
-        // }
+    public static String soundFromInternalID(Sound sound) {
+        switch (sound) {
+            case BUTTON_CLICK:
+                return "random.click";
+            default:
+                throw new RuntimeException("Sound " + sound.name() + " was not mapped!");
+        }
     }
 }

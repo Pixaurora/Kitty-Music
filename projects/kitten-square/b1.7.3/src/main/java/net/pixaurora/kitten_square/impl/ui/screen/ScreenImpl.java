@@ -39,24 +39,17 @@ public class ScreenImpl extends net.minecraft.client.gui.screen.Screen {
         this.screen.draw(display, mousePos);
     }
 
-    // @Override
-    // public void onClose() {
-    // this.screen.onExit();
-    // }
+    @Override
+    public void removed() {
+        this.screen.onExit();
+    }
 
-    // @Override
-    // public boolean shouldCloseOnEsc() {
-    // return true;
-    // }
+    @Override
+    protected void mouseClicked(int x, int y, int button) {
+        Point mousePos = Point.of(x, y);
 
-    // @Override
-    // public boolean mouseClicked(double x, double y, int button) {
-    // Point mousePos = Point.of((int) x, (int) y);
-
-    // this.screen.handleClick(mousePos, MouseButton.fromGlfwCode(button));
-
-    // return false;
-    // }
+        this.screen.handleClick(mousePos, MouseButton.fromGlfwCode(button));
+    }
 
     @Override
     public void tick() {

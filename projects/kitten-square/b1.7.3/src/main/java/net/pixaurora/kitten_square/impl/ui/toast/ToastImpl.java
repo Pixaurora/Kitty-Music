@@ -7,6 +7,7 @@ import net.pixaurora.kitten_square.impl.ui.ConversionCacheImpl;
 import net.pixaurora.kitten_square.impl.ui.display.GuiDisplayImpl;
 
 public class ToastImpl {
+    // TODO: Reimplement this class
     private final net.pixaurora.kitten_cube.impl.ui.toast.Toast toast;
     private final long millisecondsShown;
 

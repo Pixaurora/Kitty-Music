@@ -2,6 +2,7 @@ package net.pixaurora.kitten_square.impl.ui.widget;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import net.pixaurora.kitten_cube.impl.MinecraftClient;
 import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
@@ -19,14 +20,13 @@ public class TextBoxImpl implements TextBox {
         this.startPos = startPos;
     }
 
-    @SuppressWarnings("resource")
     @Override
     public Size size() {
         int width = 0;
 
-        // for (String line : lines) {
-        // width = Math.max(width, Minecraft.getInstance().font.width(line));
-        // }
+        for (String line : lines) {
+            width = Math.max(width, Minecraft.INSTANCE.textRenderer.getWidth(line));
+        }
 
         return Size.of(width, MinecraftClient.textHeight() * lines.size());
     }

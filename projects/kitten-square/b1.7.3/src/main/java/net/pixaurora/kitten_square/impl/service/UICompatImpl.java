@@ -1,9 +1,10 @@
 package net.pixaurora.kitten_square.impl.service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.resource.language.I18n;
@@ -14,17 +15,20 @@ import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.screen.Screen;
 import net.pixaurora.kitten_cube.impl.ui.sound.Sound;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.TextBox;
+import net.pixaurora.kitten_heart.impl.KitTunes;
 import net.pixaurora.kitten_heart.impl.resource.temp.FileAccess;
 import net.pixaurora.kitten_heart.impl.service.MinecraftUICompat;
 import net.pixaurora.kitten_square.impl.FakeComponent;
+import net.pixaurora.kitten_square.impl.MusicDirectory;
 import net.pixaurora.kitten_square.impl.SoundUtil;
 import net.pixaurora.kitten_square.impl.ui.screen.MinecraftScreen;
 import net.pixaurora.kitten_square.impl.ui.screen.ScreenImpl;
-import net.pixaurora.kitten_square.impl.ui.toast.ToastImpl;
 import net.pixaurora.kitten_square.impl.ui.widget.TextBoxImpl;
 
 public class UICompatImpl implements MinecraftUICompat {
-    // private final Minecraft client = Minecraft.INSTANCE;
+    private Minecraft client() {
+        return Minecraft.INSTANCE;
+    }
 
     public static String internalToMinecraftType(ResourcePath path) {
         String namespacePart = path.namespace() != "" ? path.namespace() + "/" : "";
@@ -42,6 +46,7 @@ public class UICompatImpl implements MinecraftUICompat {
 
     @Override
     public void sendToast(net.pixaurora.kitten_cube.impl.ui.toast.Toast toast) {
+        // TODO: Actually send toasts
         // this.client.getToasts().addToast(new ToastImpl(toast));
     }
 
@@ -75,53 +80,67 @@ public class UICompatImpl implements MinecraftUICompat {
 
     @Override
     public int textHeight() {
-        return 0;
-        // return this.client.font.lineHeight;
+        return 9;
     }
 
     @Override
     public int textWidth(Component text) {
-        return 0;
-        // return this.client.font.width(internalToMinecraftType(text));
+        return this.client().textRenderer.getWidth(internalToMinecraftType(text));
     }
 
     @Override
     public void playSound(Sound sound) {
-        // this.client.getSoundManager().play(SoundUtil.soundFromInternalID(sound));
+        this.client().soundSystem.play(SoundUtil.soundFromInternalID(sound), 1.0F, 1.0F);
     }
 
     @Override
     public void setScreen(Screen screen) {
-        // net.minecraft.client.gui.screens.Screen mcScreen;
-        // if (screen instanceof MinecraftScreen) {
-        // mcScreen = ((MinecraftScreen) screen).parent();
-        // } else {
-        // mcScreen = new ScreenImpl(screen);
-        // }
-        // this.client.setScreen(mcScreen);
+        net.minecraft.client.gui.screen.Screen mcScreen;
+        if (screen instanceof MinecraftScreen) {
+            mcScreen = ((MinecraftScreen) screen).parent();
+        } else {
+            mcScreen = new ScreenImpl(screen);
+        }
+
+        this.client().openScreen(mcScreen);
     }
 
     @Override
     public void openURL(String url) {
-        // Util.getPlatform().openUri(url);
+        URI uri;
+        try {
+            uri = new URI(url);
+        } catch (URISyntaxException e) {
+            KitTunes.LOGGER.info("Couldn't convert `" + url + "` to URI!");
+            return;
+        }
+
+        try {
+            Class<?> clazz = Class.forName("java.awt.Desktop");
+            Object object = clazz.getMethod("getDesktop").invoke(null);
+            clazz.getMethod("browse", URI.class).invoke(object, uri);
+        } catch (Throwable throwable) {
+            KitTunes.LOGGER.error("Couldn't open link", throwable);
+        }
     }
 
     @Override
     public TextBox createTextbox(List<Component> lines, Color color, int maxLineLength, Point pos) {
-        // List<FormattedCharSequence> text =
-        // lines.stream().map(UICompatImpl::internalToMinecraftType)
-        // .flatMap(line -> this.client.font.split(line,
-        // maxLineLength).stream()).toList();
+        List<String> text = lines.stream().map(UICompatImpl::internalToMinecraftType)
+                .flatMap(line -> this.client().textRenderer.split(line,
+                        maxLineLength).stream())
+                .collect(Collectors.toList());
 
-        return new TextBoxImpl(null, color, pos);
+        return new TextBoxImpl(text, color, pos);
     }
 
     @Override
     public FileAccess accessResource(ResourcePath path) throws IOException {
-        // TODO: Maybe change this workaround?
-        // Resource resource =
-        // this.client.getResourceManager().getResource(internalToMinecraftType(path))
-
-        return FileAccess.create(Files.newInputStream(Paths.get("resources").resolve(internalToMinecraftType(path))));
+        if (path.namespace().equals("")) {
+            String name = path.path();
+            return FileAccess.create(MusicDirectory.forPath(name));
+        } else {
+            throw new RuntimeException("Can't access regular files yet!");
+        }
     }
 }
