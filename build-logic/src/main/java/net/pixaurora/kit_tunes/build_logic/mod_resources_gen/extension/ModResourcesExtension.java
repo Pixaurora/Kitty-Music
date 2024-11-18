@@ -15,6 +15,7 @@ public abstract class ModResourcesExtension extends ModInfoExtension {
 
     @Inject
     public ModResourcesExtension(Project project) {
+        super(project);
         this.propertiesWorkaround = new ProjectProperties(project);
     }
 

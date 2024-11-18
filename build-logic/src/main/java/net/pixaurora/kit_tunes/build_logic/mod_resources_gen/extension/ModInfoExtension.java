@@ -3,11 +3,22 @@ package net.pixaurora.kit_tunes.build_logic.mod_resources_gen.extension;
 import java.nio.file.Path;
 
 import org.gradle.api.Action;
+import org.gradle.api.Project;
+import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Nested;
 
+import net.fabricmc.loom.LoomGradleExtension;
+import net.fabricmc.loom.api.LoomGradleExtensionAPI;
+
 public abstract class ModInfoExtension {
+    private final Project project;
+
+    public ModInfoExtension(Project project) {
+        this.project = project;
+    }
+
     @Input
     public abstract Property<String> getId();
 
@@ -35,6 +46,17 @@ public abstract class ModInfoExtension {
     public void mixin(String path) {
         var mixinFile = Path.of(path);
         this.getMixinFile().set(mixinFile.toString());
+    }
+
+    public void accessWidener(String path) {
+        var loom = this.project.getExtensions().getByType(LoomGradleExtensionAPI.class);
+
+        var projectDir = project.getProjectDir().toPath();
+        var accessWidenerPath = projectDir.resolve(Path.of("src", "main", "resources", path));
+
+        loom.getAccessWidenerPath().set(accessWidenerPath.toFile());
+
+        this.getAccessWidener().set(path);
     }
 
     public void metadata(Action<? super ModMetadata> configuration) {

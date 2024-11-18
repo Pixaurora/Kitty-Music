@@ -5,12 +5,8 @@ plugins {
 
 mod {
     intermediaryMappings = "net.fabricmc:intermediary"
-    accessWidener = "kitten_sounds.accesswidener"
+    accessWidener("kitten_sounds.accesswidener")
     mixin("kitten_sounds.mixins.json")
-}
-
-loom {
-    accessWidenerPath = file("src/main/resources/kitten_sounds.accesswidener")
 }
 
 dependencies {
