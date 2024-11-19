@@ -26,6 +26,8 @@ import net.pixaurora.kitten_square.impl.ui.screen.ScreenImpl;
 import net.pixaurora.kitten_square.impl.ui.widget.TextBoxImpl;
 
 public class UICompatImpl implements MinecraftUICompat {
+    public static boolean openingNewScreen;
+
     private Minecraft client() {
         return Minecraft.INSTANCE;
     }
@@ -95,6 +97,16 @@ public class UICompatImpl implements MinecraftUICompat {
 
     @Override
     public void setScreen(Screen screen) {
+        try {
+            openingNewScreen = true;
+
+            setScreen0(screen);
+        } finally {
+            openingNewScreen = false;
+        }
+    }
+
+    private void setScreen0(Screen screen) {
         net.minecraft.client.gui.screen.Screen mcScreen;
         if (screen instanceof MinecraftScreen) {
             mcScreen = ((MinecraftScreen) screen).parent();
