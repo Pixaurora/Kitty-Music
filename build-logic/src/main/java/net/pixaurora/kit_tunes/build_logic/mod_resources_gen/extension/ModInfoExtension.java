@@ -4,12 +4,10 @@ import java.nio.file.Path;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Nested;
 
-import net.fabricmc.loom.LoomGradleExtension;
 import net.fabricmc.loom.api.LoomGradleExtensionAPI;
 
 public abstract class ModInfoExtension {

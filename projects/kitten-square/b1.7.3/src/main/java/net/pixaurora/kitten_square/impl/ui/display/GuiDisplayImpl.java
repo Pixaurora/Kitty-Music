@@ -1,6 +1,13 @@
 package net.pixaurora.kitten_square.impl.ui.display;
 
+import org.lwjgl.opengl.GL11;
+
+import com.mojang.blaze3d.vertex.BufferBuilder;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiElement;
 import net.pixaurora.kit_tunes.api.resource.ResourcePath;
+import net.pixaurora.kitten_cube.impl.MinecraftClient;
 import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.text.Color;
@@ -8,59 +15,78 @@ import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.TextBox;
 import net.pixaurora.kitten_square.impl.ui.ConversionCacheImpl;
+import net.pixaurora.kitten_square.impl.ui.widget.TextBoxImpl;
 
 public class GuiDisplayImpl implements GuiDisplay {
+    private final GuiElement element;
     private final ConversionCacheImpl conversions;
 
-    public GuiDisplayImpl(ConversionCacheImpl conversions) {
+    private int offsetX;
+    private int offsetY;
+
+    public GuiDisplayImpl(GuiElement element, ConversionCacheImpl conversions, int offsetX, int offsetY) {
+        this.element = element;
         this.conversions = conversions;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
     }
 
-    // TODO: Reimplement methods
+    public GuiDisplayImpl(GuiElement element, ConversionCacheImpl conversions) {
+        this(element, conversions, 0, 0);
+    }
 
     @Override
     public void drawTexture(ResourcePath path, Size size, Point pos) {
-        // int width = size.width();
-        // int height = size.height();
-
-        // RenderSystem.setShaderTexture(0, conversions.convert(path));
-        // GuiComponent.blit(poseStack, pos.x(), pos.y(), 0, 0.0F, 0.0F, width, height,
-        // width, height);
+        this.drawGuiTextureSubsection(path, size, pos, size, pos);
     }
 
     @Override
     public void drawGuiTextureSubsection(ResourcePath path, Size size, Point pos, Size subsection, Point offset) {
-        // RenderSystem.setShaderTexture(0, conversions.convert(path));
-        // GuiComponent.blit(poseStack, pos.x(), pos.y(), offset.x(), offset.y(),
-        // subsection.width(), subsection.height(),
-        // size.width(), size.height());
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, Minecraft.INSTANCE.textureManager.load(this.conversions.convert(path)));
+
+        int x = pos.x();
+        int y = pos.y();
+        float textureWidth = size.width();
+        float textureHeight = size.height();
+
+        float u = offset.x();
+        float v = offset.y();
+        int width = subsection.width();
+        int height = subsection.height();
+
+        float invertedTexWidth = 1.0f / textureWidth;
+        float invertedTexHeight = 1.0f / textureHeight;
+        BufferBuilder bufferBuilder = BufferBuilder.INSTANCE;
+        bufferBuilder.start();
+        bufferBuilder.vertex(x, y + height, 0.0, u * invertedTexWidth, (v + (float) height) * invertedTexHeight);
+        bufferBuilder.vertex(x + width, y + height, 0.0, (u + (float) width) * invertedTexWidth,
+                (v + (float) height) * invertedTexHeight);
+        bufferBuilder.vertex(x + width, y, 0.0, (u + (float) width) * invertedTexWidth, v * invertedTexHeight);
+        bufferBuilder.vertex(x, y, 0.0, u * invertedTexWidth, v * invertedTexHeight);
+        bufferBuilder.end();
     }
 
-    @SuppressWarnings("resource")
     @Override
     public void drawText(Component text, Color color, Point pos, boolean shadowed) {
-        // GuiComponent.drawString(poseStack, Minecraft.getInstance().font,
-        // conversions.convert(text), pos.x(), pos.y(),
-        // color.hex());
+        element.drawString(Minecraft.INSTANCE.textRenderer, this.conversions.convert(text), pos.x() + offsetX,
+                pos.y() + offsetY, color.hex());
     }
 
-    @SuppressWarnings("resource")
     @Override
     public void drawTextBox(TextBox textBox) {
-        // if (textBox instanceof TextBoxImpl) {
-        // TextBoxImpl impl = (TextBoxImpl) textBox;
+        if (!(textBox instanceof TextBoxImpl)) {
+            throw new UnsupportedOperationException("Unsupported instance of textbox");
+        }
 
-        // int y = impl.startPos.y();
+        TextBoxImpl impl = (TextBoxImpl) textBox;
 
-        // for (FormattedCharSequence line : impl.lines) {
-        // GuiComponent.drawString(poseStack, Minecraft.getInstance().font, line,
-        // impl.startPos.x(), y,
-        // impl.color.hex());
+        int x = impl.startPos.x() + offsetX;
+        int y = impl.startPos.y() + offsetY;
 
-        // y += MinecraftClient.textHeight();
-        // }
-        // } else {
-        // throw new UnsupportedOperationException("Unsupported instance of textbox");
-        // }
+        for (String line : impl.lines) {
+            this.element.drawString(Minecraft.INSTANCE.textRenderer, line, x, y, impl.color.hex());
+
+            y += MinecraftClient.textHeight();
+        }
     }
 }

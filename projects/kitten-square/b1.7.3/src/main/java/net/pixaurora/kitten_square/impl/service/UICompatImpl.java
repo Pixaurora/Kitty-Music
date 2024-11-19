@@ -34,7 +34,7 @@ public class UICompatImpl implements MinecraftUICompat {
 
     public static String internalToMinecraftType(ResourcePath path) {
         String namespacePart = path.namespace() != "" ? path.namespace() + "/" : "";
-        return "assets/" + namespacePart + path.path();
+        return "/assets/" + namespacePart + path.path();
     }
 
     public static String internalToMinecraftType(Component component) {

@@ -5,7 +5,6 @@ import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.ui.controls.MouseButton;
 import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
 import net.pixaurora.kitten_cube.impl.ui.screen.Screen;
-import net.pixaurora.kitten_heart.impl.KitTunes;
 import net.pixaurora.kitten_square.impl.service.UICompatImpl;
 import net.pixaurora.kitten_square.impl.ui.ConversionCacheImpl;
 import net.pixaurora.kitten_square.impl.ui.display.GuiDisplayImpl;
@@ -35,7 +34,7 @@ public class ScreenImpl extends net.minecraft.client.gui.screen.Screen {
         this.renderBackground();
         super.render(mouseX, mouseY, delta);
 
-        GuiDisplay display = new GuiDisplayImpl(this.conversions);
+        GuiDisplay display = new GuiDisplayImpl(this, this.conversions);
         Point mousePos = Point.of(mouseX, mouseY);
 
         this.screen.draw(display, mousePos);
