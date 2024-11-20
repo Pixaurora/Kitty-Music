@@ -37,7 +37,7 @@ public class GuiDisplayImpl implements GuiDisplay {
 
     @Override
     public void drawTexture(ResourcePath path, Size size, Point pos) {
-        this.drawGuiTextureSubsection(path, size, pos, size, pos);
+        this.drawGuiTextureSubsection(path, size, pos, size, Point.ZERO);
     }
 
     @Override
