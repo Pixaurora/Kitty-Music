@@ -9,7 +9,6 @@ import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.ui.controls.MouseButton;
 import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
-import net.pixaurora.kitten_cube.impl.ui.screen.align.AlignmentStrategy;
 import net.pixaurora.kitten_cube.impl.ui.texture.GuiTexture;
 
 public class TiledBackground implements IncorporealWidget {
@@ -43,7 +42,7 @@ public class TiledBackground implements IncorporealWidget {
     }
 
     @Override
-    public Optional<AlignmentStrategy> alignmentMethod() {
+    public Optional<Alignment> alignmentMethod() {
         return Optional.of(Alignment.TOP_LEFT);
     }
 

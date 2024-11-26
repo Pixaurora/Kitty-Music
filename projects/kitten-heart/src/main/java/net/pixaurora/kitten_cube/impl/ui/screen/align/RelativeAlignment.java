@@ -1,30 +1,37 @@
 package net.pixaurora.kitten_cube.impl.ui.screen.align;
 
-import java.util.function.Function;
-
-import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.ui.widget.Widget;
 
-public class RelativeAlignment implements AlignmentStrategy {
-    private final AlignmentStrategy baseAlignment;
+public class RelativeAlignment implements Alignment {
+    private final Alignment baseAlignment;
 
-    private final Function<Widget, Point> offset;
     private final Widget widget;
+    private final WidgetAnchor anchor;
 
-    public RelativeAlignment(AlignmentStrategy baseAlignment, Function<Widget, Point> offset, Widget widget) {
+    public RelativeAlignment(Alignment baseAlignment, Widget widget, WidgetAnchor anchor) {
         this.baseAlignment = baseAlignment;
-        this.offset = offset;
         this.widget = widget;
+        this.anchor = anchor;
     }
 
     @Override
-    public Point align(Point original, Size window) {
-        return this.baseAlignment.align(original, window).offset(this.offset.apply(this.widget));
+    public int alignX(int x, int y, Size window) {
+        return this.baseAlignment.alignX(x, y, window) + this.anchor.anchorX(this.widget);
     }
 
     @Override
-    public Point inverseAlign(Point aligned, Size window) {
-        return this.baseAlignment.inverseAlign(aligned, window).offset(this.offset.apply(this.widget).scaledBy(-1));
+    public int alignY(int x, int y, Size window) {
+        return this.baseAlignment.alignY(x, y, window) + this.anchor.anchorY(this.widget);
+    }
+
+    @Override
+    public int inverseAlignX(int x, int y, Size window) {
+        return this.baseAlignment.inverseAlignX(x, y, window) - this.anchor.anchorX(this.widget);
+    }
+
+    @Override
+    public int inverseAlignY(int x, int y, Size window) {
+        return this.baseAlignment.inverseAlignY(x, y, window) - this.anchor.anchorY(this.widget);
     }
 }

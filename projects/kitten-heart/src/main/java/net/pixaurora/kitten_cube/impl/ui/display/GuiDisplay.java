@@ -10,13 +10,28 @@ import net.pixaurora.kitten_cube.impl.ui.texture.Texture;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.TextBox;
 
 public interface GuiDisplay {
-    public void drawTexture(ResourcePath path, Size size, Point pos);
+    public void drawTexture(ResourcePath path, int width, int height, int x, int y);
 
-    public void drawGuiTextureSubsection(ResourcePath path, Size size, Point pos, Size subsection, Point offset);
+    public void drawGuiTextureSubsection(ResourcePath path, int width, int height, int x, int y, int subsectionWidth,
+            int subsectionHeight, int offsetX, int offsetY);
 
-    public void drawText(Component text, Color color, Point pos, boolean shadowed);
+    public void drawText(Component text, Color color, int x, int y, boolean shadowed);
 
-    public void drawTextBox(TextBox textBox);
+    public void drawTextBox(TextBox box);
+
+    public default void drawTexture(ResourcePath path, Size size, Point pos) {
+        this.drawTexture(path, size.width(), size.height(), pos.x(), pos.y());
+    }
+
+    public default void drawGuiTextureSubsection(ResourcePath path, Size size, Point pos, Size subsection,
+            Point offset) {
+        this.drawGuiTextureSubsection(path, size.width(), size.height(), pos.x(), pos.y(), subsection.width(),
+                subsection.height(), offset.x(), offset.y());
+    }
+
+    public default void drawText(Component text, Color color, Point pos, boolean shadowed) {
+        this.drawText(text, color, pos.x(), pos.y(), shadowed);
+    }
 
     public default void drawText(Component text, Color color, Point pos) {
         this.drawText(text, color, pos, true);

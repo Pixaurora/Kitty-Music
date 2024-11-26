@@ -13,9 +13,8 @@ import net.pixaurora.kitten_cube.impl.text.Color;
 import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.screen.Screen;
 import net.pixaurora.kitten_cube.impl.ui.screen.WidgetContainer;
-import net.pixaurora.kitten_cube.impl.ui.screen.WidgetContainer.AlignedToCorner;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
-import net.pixaurora.kitten_cube.impl.ui.screen.align.AlignmentStrategy;
+import net.pixaurora.kitten_cube.impl.ui.screen.align.WidgetAnchor;
 import net.pixaurora.kitten_cube.impl.ui.texture.GuiTexture;
 import net.pixaurora.kitten_cube.impl.ui.texture.Texture;
 import net.pixaurora.kitten_cube.impl.ui.widget.StaticTexture;
@@ -54,7 +53,7 @@ public class MusicScreen extends KitTunesScreenTemplate {
     }
 
     @Override
-    protected AlignmentStrategy alignmentMethod() {
+    protected Alignment alignmentMethod() {
         return Alignment.CENTER;
     }
 
@@ -145,7 +144,7 @@ public class MusicScreen extends KitTunesScreenTemplate {
                                     }
                                 },
                                 Point.of(0, 0)))
-                .customizedAlignment(progressBar.relativeAlignment(AlignedToCorner.BOTTOM_LEFT));
+                .customizedAlignment(progressBar.relativeAlignment(WidgetAnchor.BOTTOM_LEFT));
 
         return new MusicDisplayMode(song, Arrays.asList(progressBar, timer, albumArt, songInfo, pauseButton));
     }

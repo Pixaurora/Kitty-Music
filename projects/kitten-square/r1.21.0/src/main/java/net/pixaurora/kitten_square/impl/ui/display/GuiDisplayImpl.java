@@ -5,8 +5,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.FormattedCharSequence;
 import net.pixaurora.kit_tunes.api.resource.ResourcePath;
 import net.pixaurora.kitten_cube.impl.MinecraftClient;
-import net.pixaurora.kitten_cube.impl.math.Point;
-import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.text.Color;
 import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
@@ -25,24 +23,21 @@ public class GuiDisplayImpl implements GuiDisplay {
     }
 
     @Override
-    public void drawTexture(ResourcePath path, Size size, Point pos) {
-        int width = size.width();
-        int height = size.height();
-
-        this.graphics.blit(conversions.convert(path), pos.x(), pos.y(), 0, 0.0F, 0.0F, width, height, width, height);
+    public void drawTexture(ResourcePath path, int width, int height, int x, int y) {
+        this.graphics.blit(conversions.convert(path), x, y, 0, 0.0F, 0.0F, width, height, width, height);
     }
 
     @Override
-    public void drawGuiTextureSubsection(ResourcePath path, Size size, Point pos, Size subsection, Point offset) {
-        this.graphics.blitSprite(conversions.convert(path), size.width(), size.height(), offset.x(), offset.y(),
-                pos.x(), pos.y(), subsection.width(), subsection.height());
+    public void drawGuiTextureSubsection(ResourcePath path, int width, int height, int x, int y, int subsectionWidth,
+            int subsectionHeight, int offsetX, int offsetY) {
+        this.graphics.blitSprite(conversions.convert(path), width, height, offsetX, offsetY, x, y, subsectionWidth,
+                subsectionHeight);
     }
 
     @SuppressWarnings("resource")
     @Override
-    public void drawText(Component text, Color color, Point pos, boolean shadowed) {
-        this.graphics.drawString(Minecraft.getInstance().font, conversions.convert(text), pos.x(), pos.y(), color.hex(),
-                shadowed);
+    public void drawText(Component text, Color color, int x, int y, boolean shadowed) {
+        this.graphics.drawString(Minecraft.getInstance().font, conversions.convert(text), x, y, color.hex(), shadowed);
     }
 
     @SuppressWarnings("resource")

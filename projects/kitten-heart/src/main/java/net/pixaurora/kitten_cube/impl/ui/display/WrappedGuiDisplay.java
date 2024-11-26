@@ -1,8 +1,6 @@
 package net.pixaurora.kitten_cube.impl.ui.display;
 
 import net.pixaurora.kit_tunes.api.resource.ResourcePath;
-import net.pixaurora.kitten_cube.impl.math.Point;
-import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.text.Color;
 import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.TextBox;
@@ -19,18 +17,20 @@ public class WrappedGuiDisplay implements GuiDisplay {
     }
 
     @Override
-    public void drawTexture(ResourcePath path, Size size, Point pos) {
-        this.parent.drawTexture(path, size, pos);
+    public void drawTexture(ResourcePath path, int width, int height, int x, int y) {
+        this.parent.drawTexture(path, width, height, x, y);
     }
 
     @Override
-    public void drawGuiTextureSubsection(ResourcePath path, Size size, Point pos, Size subsection, Point offset) {
-        this.parent.drawGuiTextureSubsection(path, size, pos, subsection, offset);
+    public void drawGuiTextureSubsection(ResourcePath path, int width, int height, int x, int y, int subsectionWidth,
+            int subsectionHeight, int offsetX, int offsetY) {
+        this.parent.drawGuiTextureSubsection(path, width, height, x, y, subsectionWidth, subsectionHeight, offsetX,
+                offsetY);
     }
 
     @Override
-    public void drawText(Component text, Color color, Point pos, boolean shadowed) {
-        this.parent.drawText(text, color, pos, shadowed);
+    public void drawText(Component text, Color color, int x, int y, boolean shadowed) {
+        this.parent.drawText(text, color, x, y, shadowed);
     }
 
     @Override

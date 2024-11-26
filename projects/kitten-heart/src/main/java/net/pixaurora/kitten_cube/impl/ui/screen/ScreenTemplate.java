@@ -2,21 +2,17 @@ package net.pixaurora.kitten_cube.impl.ui.screen;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.ui.controls.MouseButton;
 import net.pixaurora.kitten_cube.impl.ui.display.AlignedGuiDisplay;
 import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
-import net.pixaurora.kitten_cube.impl.ui.screen.align.AlignmentStrategy;
-import net.pixaurora.kitten_cube.impl.ui.screen.align.PointManager;
+import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
 import net.pixaurora.kitten_cube.impl.ui.widget.Widget;
 
 public abstract class ScreenTemplate implements Screen {
     private boolean initializedWidgets = false;
-
-    private Optional<PointManager> defaultAligner = Optional.empty();
 
     private final List<WidgetContainer<?>> widgets = new ArrayList<>();
 
@@ -24,13 +20,11 @@ public abstract class ScreenTemplate implements Screen {
 
     @Override
     public final void draw(GuiDisplay gui, Point mousePos) {
-        PointManager defaultAligner = this.defaultAligner.get();
-
         for (WidgetContainer<?> widget : this.widgets) {
-            PointManager aligner = widget.customizedAligner().orElse(defaultAligner);
+            Alignment alignment = widget.customizedAlignment().orElseGet(this::alignmentMethod);
 
-            GuiDisplay alignedGui = new AlignedGuiDisplay(gui, aligner);
-            Point alignedMousePos = aligner.inverseAlign(mousePos);
+            GuiDisplay alignedGui = new AlignedGuiDisplay(gui, alignment, this.window);
+            Point alignedMousePos = alignment.inverseAlign(mousePos, window);
 
             widget.get().draw(alignedGui, alignedMousePos);
         }
@@ -51,12 +45,10 @@ public abstract class ScreenTemplate implements Screen {
 
     @Override
     public final void handleClick(Point mousePos, MouseButton button) {
-        PointManager defaultAligner = this.defaultAligner.get();
-
         for (WidgetContainer<?> widget : this.widgets) {
-            PointManager aligner = widget.customizedAligner().orElse(defaultAligner);
+            Alignment aligner = widget.customizedAlignment().orElseGet(this::alignmentMethod);
 
-            Point alignedMousePos = aligner.inverseAlign(mousePos);
+            Point alignedMousePos = aligner.inverseAlign(mousePos, this.window);
 
             if (widget.get().isWithinBounds(alignedMousePos)) {
                 widget.get().onClick(alignedMousePos, button);
@@ -79,8 +71,6 @@ public abstract class ScreenTemplate implements Screen {
     }
 
     private void updateWindow(Size window) {
-        this.defaultAligner = Optional.of(new PointManager(this.alignmentMethod(), window));
-
         for (WidgetContainer<?> widget : this.widgets) {
             widget.onWindowUpdate(window);
         }
@@ -98,7 +88,7 @@ public abstract class ScreenTemplate implements Screen {
         this.widgets.remove(widget);
     }
 
-    protected abstract AlignmentStrategy alignmentMethod();
+    protected abstract Alignment alignmentMethod();
 
     protected void addBackground() {
     }

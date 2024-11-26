@@ -1,28 +1,26 @@
 package net.pixaurora.kitten_cube.impl.ui.screen.align;
 
-import java.util.function.Function;
-
 import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
 
-public enum Alignment implements AlignmentStrategy {
-    CENTER(window -> window.midPoint()), CENTER_TOP(window -> window.midPoint().withY(0)),
-    CENTER_BOTTOM(window -> window.midPoint().withYOf(window)),
-    TOP_LEFT(window -> Point.ZERO);
+public interface Alignment {
+    public static final Alignment CENTER = new BasicAlignments.TrueCenterAlignment();
+    public static final Alignment CENTER_TOP = new BasicAlignments.TopCenterAlignment();
+    public static final Alignment CENTER_BOTTOM = new BasicAlignments.BottomCenterAlignment();
+    public static final Alignment TOP_LEFT = new BasicAlignments.TopLeftAlignment();
 
-    private final Function<Size, Point> offsetRule;
+    public int alignX(int x, int y, Size window);
 
-    private Alignment(Function<Size, Point> offsetRule) {
-        this.offsetRule = offsetRule;
-    }
+    public int alignY(int x, int y, Size window);
 
-    @Override
-    public Point align(Point original, Size window) {
-        return original.offset(this.offsetRule.apply(window));
-    }
+    public int inverseAlignX(int x, int y, Size window);
 
-    @Override
-    public Point inverseAlign(Point original, Size window) {
-        return original.offset(this.offsetRule.apply(window).scaledBy(-1));
+    public int inverseAlignY(int x, int y, Size window);
+
+    public default Point inverseAlign(Point pos, Size window) {
+        int x = pos.x();
+        int y = pos.y();
+
+        return Point.of(this.inverseAlignX(x, y, window), this.inverseAlignY(x, y, window));
     }
 }

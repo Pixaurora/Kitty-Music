@@ -10,7 +10,6 @@ import net.pixaurora.kitten_cube.impl.text.Color;
 import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.screen.Screen;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
-import net.pixaurora.kitten_cube.impl.ui.screen.align.AlignmentStrategy;
 import net.pixaurora.kitten_cube.impl.ui.widget.button.Button;
 import net.pixaurora.kitten_cube.impl.ui.widget.button.RectangularButton;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.PushableTextLines;
@@ -96,7 +95,7 @@ public class ScrobblerServerAuthScreen<T extends Scrobbler> extends KitTunesScre
     }
 
     @Override
-    protected AlignmentStrategy alignmentMethod() {
+    protected Alignment alignmentMethod() {
         return Alignment.CENTER_TOP;
     }
 

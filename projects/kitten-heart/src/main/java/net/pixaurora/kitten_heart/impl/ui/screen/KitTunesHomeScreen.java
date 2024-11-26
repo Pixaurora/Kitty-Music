@@ -6,7 +6,6 @@ import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.screen.Screen;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
-import net.pixaurora.kitten_cube.impl.ui.screen.align.AlignmentStrategy;
 import net.pixaurora.kitten_cube.impl.ui.texture.GuiTexture;
 import net.pixaurora.kitten_cube.impl.ui.widget.StaticGuiTexture;
 import net.pixaurora.kitten_cube.impl.ui.widget.button.RectangularButton;
@@ -45,7 +44,7 @@ public class KitTunesHomeScreen extends KitTunesScreenTemplate {
     }
 
     @Override
-    protected AlignmentStrategy alignmentMethod() {
+    protected Alignment alignmentMethod() {
         return Alignment.CENTER;
     }
 }
