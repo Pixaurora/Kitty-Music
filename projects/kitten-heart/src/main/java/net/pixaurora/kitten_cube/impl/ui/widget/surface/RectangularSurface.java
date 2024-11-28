@@ -12,18 +12,13 @@ public class RectangularSurface implements WidgetSurface {
         this.endPos = endPos;
     }
 
-    private RectangularSurface(Point startPos, Size size) {
-        this.startPos = startPos;
-        this.endPos = startPos.offset(size);
+    private RectangularSurface(Size size) {
+        this.startPos = Point.ZERO;
+        this.endPos = this.startPos.offset(size);
     }
 
-    public static RectangularSurface of(Point startPos, Size size) {
-        return new RectangularSurface(startPos, size);
-    }
-
-    @Override
-    public Point pos() {
-        return this.startPos;
+    public static RectangularSurface of(Size size) {
+        return new RectangularSurface(size);
     }
 
     @Override

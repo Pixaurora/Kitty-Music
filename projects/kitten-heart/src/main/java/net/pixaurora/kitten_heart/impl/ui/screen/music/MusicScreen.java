@@ -98,11 +98,14 @@ public class MusicScreen extends KitTunesScreenTemplate {
 
     public DisplayMode createMusicDisplay(PlayingSong song) {
         WidgetContainer<ProgressBar> progressBar = this
-                .addWidget(new ProgressBar(Point.of(0, -24), song, PLAYING_SONG_TILE_SET))
-                .customizedAlignment(Alignment.CENTER_BOTTOM);
+                .addWidget(new ProgressBar(song, PLAYING_SONG_TILE_SET))
+                .align(Alignment.CENTER_BOTTOM)
+                .at(Point.of(0, -24))
+                .anchor(WidgetAnchor.TOP_MIDDLE);
 
-        WidgetContainer<Timer> timer = this.addWidget(new Timer(Point.of(0, -13), song))
-                .customizedAlignment(Alignment.CENTER_BOTTOM);
+        WidgetContainer<Timer> timer = this.addWidget(new Timer(song))
+                .align(Alignment.CENTER_BOTTOM)
+                .at(Point.of(0, -13));
 
         Optional<Album> album = song.track().flatMap(Track::album);
 
@@ -112,9 +115,10 @@ public class MusicScreen extends KitTunesScreenTemplate {
         Size iconSize = Size.of(128, 128);
         WidgetContainer<StaticTexture> albumArt = this
                 .addWidget(
-                        new StaticTexture(Texture.of(albumArtTexture, iconSize), iconSize.centerOn(Point.of(-70, 0))));
+                        new StaticTexture(Texture.of(albumArtTexture, iconSize)))
+                .at(iconSize.centerOn(Point.of(-70, 0)));
 
-        WidgetContainer<PushableTextLines> songInfo = this.addWidget(PushableTextLines.regular(Point.of(70, -8)));
+        WidgetContainer<PushableTextLines> songInfo = this.addWidget(PushableTextLines.regular()).at(Point.of(70, -8));
 
         if (song.track().isPresent()) {
             Track track = song.track().get();
@@ -142,9 +146,8 @@ public class MusicScreen extends KitTunesScreenTemplate {
                                     } else if (state == PlaybackState.PLAYING) {
                                         controls.pause();
                                     }
-                                },
-                                Point.of(0, 0)))
-                .customizedAlignment(progressBar.relativeAlignment(WidgetAnchor.BOTTOM_LEFT));
+                                }))
+                .align(progressBar.relativeTo(WidgetAnchor.BOTTOM_LEFT));
 
         return new MusicDisplayMode(song, Arrays.asList(progressBar, timer, albumArt, songInfo, pauseButton));
     }

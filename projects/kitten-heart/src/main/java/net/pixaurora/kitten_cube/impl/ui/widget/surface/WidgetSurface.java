@@ -7,6 +7,4 @@ public interface WidgetSurface {
     public boolean isWithinBounds(Point mousePos);
 
     public Size size();
-
-    public Point pos();
 }

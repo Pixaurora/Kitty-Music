@@ -66,22 +66,28 @@ public class ScrobblerServerAuthScreen<T extends Scrobbler> extends KitTunesScre
     @Override
     protected void firstInit() {
         Point widgetPos = Point.of(0, 10);
-        PushableTextLines title = this.addWidget(PushableTextLines.regular(widgetPos)).get();
+        PushableTextLines title = this.addWidget(PushableTextLines.regular())
+                .at(widgetPos)
+                .get();
         title.push(TITLE, Color.WHITE);
 
         String setupUrl = this.setup.url();
 
         widgetPos = title.endPos().offset(0, 10);
         Button setupInBrowser = this
-                .addWidget(RectangularButton.vanillaButton(RectangularButton.DEFAULT_SIZE.centerHorizontally(widgetPos),
-                        SETUP_IN_BROWSER, button -> MinecraftClient.openURL(setupUrl)))
+                .addWidget(
+                        RectangularButton.vanillaButton(SETUP_IN_BROWSER, button -> MinecraftClient.openURL(setupUrl)))
+                .at(RectangularButton.DEFAULT_SIZE.centerHorizontally(widgetPos))
                 .get();
         this.setupInBrowser = Optional.of(setupInBrowser);
 
         MinecraftClient.openURL(setupUrl);
 
         widgetPos = widgetPos.offset(0, RectangularButton.DEFAULT_SIZE.y() + 10);
-        this.setupStatus = Optional.of(this.addWidget(PushableTextLines.regular(widgetPos)).get());
+        this.setupStatus = Optional.of(
+                this.addWidget(PushableTextLines.regular())
+                        .at(widgetPos)
+                        .get());
 
         try {
             this.awaitedScrobbler = Optional.of(this.setup.run());

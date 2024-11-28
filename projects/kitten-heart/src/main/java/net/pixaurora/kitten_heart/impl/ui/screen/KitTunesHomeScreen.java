@@ -30,17 +30,20 @@ public class KitTunesHomeScreen extends KitTunesScreenTemplate {
     public void firstInit() {
         Point widgetPos = Point.of(0, -108);
 
-        this.addWidget(new StaticGuiTexture(SPLASH, SPLASH.size().centerHorizontally(widgetPos)));
+        this.addWidget(new StaticGuiTexture(SPLASH))
+                .at(SPLASH.size().centerHorizontally(widgetPos));
 
         widgetPos = widgetPos.offset(0, SPLASH.size().height() + 48);
         widgetPos = RectangularButton.DEFAULT_SIZE.centerHorizontally(widgetPos);
-        this.addWidget(RectangularButton.vanillaButton(widgetPos, PLAYING_MUSIC_LABEL,
-                button -> MinecraftClient.setScreen(new MusicScreen(this))));
+        this.addWidget(RectangularButton.vanillaButton(PLAYING_MUSIC_LABEL,
+                button -> MinecraftClient.setScreen(new MusicScreen(this))))
+                .at(widgetPos);
 
         widgetPos = widgetPos.withX(0).offset(0, RectangularButton.DEFAULT_SIZE.y() + 4);
         widgetPos = RectangularButton.DEFAULT_SIZE.centerHorizontally(widgetPos);
-        this.addWidget(RectangularButton.vanillaButton(widgetPos, REGISTER_SCROBBLER_LABEL,
-                button -> MinecraftClient.setScreen(LastFMScrobbler.TYPE.setup().get().setupScreen(this))));
+        this.addWidget(RectangularButton.vanillaButton(REGISTER_SCROBBLER_LABEL,
+                button -> MinecraftClient.setScreen(LastFMScrobbler.TYPE.setup().get().setupScreen(this))))
+                .at(widgetPos);
     }
 
     @Override

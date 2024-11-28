@@ -22,22 +22,20 @@ public class PauseButton implements Button {
     private final Supplier<PlaybackState> playbackState;
     private final ClickEvent onClick;
 
-    private final Point buttonPos;
     private final Point iconPos;
 
     private final WidgetSurface surface;
 
-    public PauseButton(Supplier<PlaybackState> stateSupplier, ClickEvent onClick, Point buttonPos) {
+    public PauseButton(Supplier<PlaybackState> stateSupplier, ClickEvent onClick) {
         this.playbackState = stateSupplier;
         this.onClick = onClick;
-        this.buttonPos = buttonPos;
-        this.iconPos = buttonPos.offset(2, 2);
-        this.surface = RectangularSurface.of(buttonPos, SIZE);
+        this.iconPos = Point.ZERO.offset(2, 2);
+        this.surface = RectangularSurface.of(SIZE);
     }
 
     @Override
     public void draw(GuiDisplay gui, Point mousePos) {
-        gui.drawGui(BACKGROUND.texture(this.isDisabled(), this.isWithinBounds(mousePos)), this.buttonPos);
+        gui.drawGui(BACKGROUND.texture(this.isDisabled(), this.isWithinBounds(mousePos)), Point.ZERO);
         gui.drawGui(this.playbackState.get().icon(), this.iconPos);
     }
 

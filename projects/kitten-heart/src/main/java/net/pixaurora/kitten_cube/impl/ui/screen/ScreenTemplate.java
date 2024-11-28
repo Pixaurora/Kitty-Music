@@ -21,7 +21,7 @@ public abstract class ScreenTemplate implements Screen {
     @Override
     public final void draw(GuiDisplay gui, Point mousePos) {
         for (WidgetContainer<?> widget : this.widgets) {
-            Alignment alignment = widget.customizedAlignment().orElseGet(this::alignmentMethod);
+            Alignment alignment = widget.realAlignment();
 
             GuiDisplay alignedGui = new AlignedGuiDisplay(gui, alignment, this.window);
             Point alignedMousePos = alignment.inverseAlign(mousePos, window);
@@ -46,7 +46,7 @@ public abstract class ScreenTemplate implements Screen {
     @Override
     public final void handleClick(Point mousePos, MouseButton button) {
         for (WidgetContainer<?> widget : this.widgets) {
-            Alignment aligner = widget.customizedAlignment().orElseGet(this::alignmentMethod);
+            Alignment aligner = widget.realAlignment();
 
             Point alignedMousePos = aligner.inverseAlign(mousePos, this.window);
 

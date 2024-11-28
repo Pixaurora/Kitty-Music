@@ -16,8 +16,8 @@ public class Timer implements IncorporealWidget {
     private long playedSeconds;
     private final long totalSeconds;
 
-    public Timer(Point pos, ProgressProvider progress) {
-        this.text = PushableTextLines.regular(pos);
+    public Timer(ProgressProvider progress) {
+        this.text = PushableTextLines.regular();
         this.progress = progress;
         this.playedSeconds = -1;
         this.totalSeconds = this.progress.totalDuration().getSeconds();
