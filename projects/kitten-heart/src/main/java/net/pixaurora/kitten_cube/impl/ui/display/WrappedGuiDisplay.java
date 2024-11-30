@@ -1,8 +1,10 @@
 package net.pixaurora.kitten_cube.impl.ui.display;
 
 import net.pixaurora.kit_tunes.api.resource.ResourcePath;
+import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.text.Color;
 import net.pixaurora.kitten_cube.impl.text.Component;
+import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.TextBox;
 
 public class WrappedGuiDisplay implements GuiDisplay {
@@ -34,7 +36,7 @@ public class WrappedGuiDisplay implements GuiDisplay {
     }
 
     @Override
-    public void drawTextBox(TextBox box) {
-        this.parent.drawTextBox(box);
+    public void drawTextBox(TextBox box, Alignment alignment, Size window) {
+        this.parent.drawTextBox(box, alignment, window);
     }
 }

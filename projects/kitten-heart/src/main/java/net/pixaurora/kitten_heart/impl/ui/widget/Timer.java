@@ -1,7 +1,6 @@
 package net.pixaurora.kitten_heart.impl.ui.widget;
 
 import net.pixaurora.kitten_cube.impl.math.Point;
-import net.pixaurora.kitten_cube.impl.text.Color;
 import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.controls.MouseButton;
 import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
@@ -36,7 +35,7 @@ public class Timer implements IncorporealWidget {
             this.playedSeconds = newPlayedSeconds;
 
             this.text.clear();
-            this.text.push(Component.literal(this.display()), Color.WHITE);
+            this.text.push(Component.literal(this.display()));
         }
     }
 

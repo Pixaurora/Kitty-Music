@@ -55,12 +55,12 @@ public interface WidgetAnchor {
     public static class MiddleLeft implements WidgetAnchor {
         @Override
         public int anchorX(Widget widget) {
-            return widget.size().width();
+            return 0;
         }
 
         @Override
         public int anchorY(Widget widget) {
-            return 0;
+            return widget.size().height() / 2;
         }
     }
 

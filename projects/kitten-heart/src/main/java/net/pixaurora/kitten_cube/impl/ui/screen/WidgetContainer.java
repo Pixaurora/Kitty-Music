@@ -51,6 +51,10 @@ public class WidgetContainer<T extends Widget> {
         return this.pos;
     }
 
+    public Size size() {
+        return this.widget.size();
+    }
+
     private Optional<Alignment> customizedAlignment() {
         if (this.baseAlignment.isPresent()) {
             return this.baseAlignment;

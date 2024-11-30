@@ -9,7 +9,9 @@ import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.text.Color;
 import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.screen.Screen;
+import net.pixaurora.kitten_cube.impl.ui.screen.WidgetContainer;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
+import net.pixaurora.kitten_cube.impl.ui.screen.align.WidgetAnchor;
 import net.pixaurora.kitten_cube.impl.ui.widget.button.Button;
 import net.pixaurora.kitten_cube.impl.ui.widget.button.RectangularButton;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.PushableTextLines;
@@ -50,44 +52,48 @@ public class ScrobblerServerAuthScreen<T extends Scrobbler> extends KitTunesScre
         PushableTextLines output = this.setupStatus.orElseThrow(RuntimeException::new);
 
         output.clear();
-        output.push(message, Color.WHITE);
+        output.push(message);
     }
 
     private void sendError(KitTunesException exception) {
         PushableTextLines output = this.setupStatus.orElseThrow(RuntimeException::new);
 
-        output.push(exception.userMessage(), Color.RED);
+        output.setColor(Color.RED);
+
+        output.push(exception.userMessage());
         if (exception.isPrinted()) {
             KitTunes.LOGGER.error("Unhandled exception during scrobbler setup!", exception);
-            output.push(UNUSUAL_ERROR_ENCOUNTERED, Color.RED);
+            output.push(UNUSUAL_ERROR_ENCOUNTERED);
         }
     }
 
     @Override
     protected void firstInit() {
-        Point widgetPos = Point.of(0, 10);
-        PushableTextLines title = this.addWidget(PushableTextLines.regular())
-                .at(widgetPos)
-                .get();
-        title.push(TITLE, Color.WHITE);
+        Point widgetOffset = Point.of(0, 10);
+
+        WidgetContainer<PushableTextLines> title = this.addWidget(PushableTextLines.regular())
+                .anchor(WidgetAnchor.TOP_MIDDLE)
+                .at(widgetOffset);
+        title.get().push(TITLE);
 
         String setupUrl = this.setup.url();
 
-        widgetPos = title.endPos().offset(0, 10);
-        Button setupInBrowser = this
+        WidgetContainer<RectangularButton> setupInBrowser = this
                 .addWidget(
                         RectangularButton.vanillaButton(SETUP_IN_BROWSER, button -> MinecraftClient.openURL(setupUrl)))
-                .at(RectangularButton.DEFAULT_SIZE.centerHorizontally(widgetPos))
-                .get();
-        this.setupInBrowser = Optional.of(setupInBrowser);
+                .align(title.relativeTo(WidgetAnchor.BOTTOM_MIDDLE))
+                .anchor(WidgetAnchor.TOP_MIDDLE)
+                .at(widgetOffset);
+        this.setupInBrowser = Optional.of(setupInBrowser.get());
 
         MinecraftClient.openURL(setupUrl);
 
-        widgetPos = widgetPos.offset(0, RectangularButton.DEFAULT_SIZE.y() + 10);
-        this.setupStatus = Optional.of(
-                this.addWidget(PushableTextLines.regular())
-                        .at(widgetPos)
-                        .get());
+        WidgetContainer<PushableTextLines> setupStatus = this.addWidget(PushableTextLines.regular())
+                .align(setupInBrowser.relativeTo(WidgetAnchor.BOTTOM_MIDDLE))
+                .anchor(WidgetAnchor.TOP_MIDDLE)
+                .at(widgetOffset);
+
+        this.setupStatus = Optional.of(setupStatus.get());
 
         try {
             this.awaitedScrobbler = Optional.of(this.setup.run());

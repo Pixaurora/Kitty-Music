@@ -9,7 +9,6 @@ import net.pixaurora.kit_tunes.api.music.Track;
 import net.pixaurora.kit_tunes.api.resource.ResourcePath;
 import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
-import net.pixaurora.kitten_cube.impl.text.Color;
 import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.screen.Screen;
 import net.pixaurora.kitten_cube.impl.ui.screen.WidgetContainer;
@@ -104,8 +103,8 @@ public class MusicScreen extends KitTunesScreenTemplate {
                 .anchor(WidgetAnchor.TOP_MIDDLE);
 
         WidgetContainer<Timer> timer = this.addWidget(new Timer(song))
-                .align(Alignment.CENTER_BOTTOM)
-                .at(Point.of(0, -13));
+                .align(progressBar.relativeTo(WidgetAnchor.BOTTOM_MIDDLE))
+                .anchor(WidgetAnchor.TOP_MIDDLE);
 
         Optional<Album> album = song.track().flatMap(Track::album);
 
@@ -116,20 +115,23 @@ public class MusicScreen extends KitTunesScreenTemplate {
         WidgetContainer<StaticTexture> albumArt = this
                 .addWidget(
                         new StaticTexture(Texture.of(albumArtTexture, iconSize)))
-                .at(iconSize.centerOn(Point.of(-70, 0)));
+                .anchor(WidgetAnchor.MIDDLE_RIGHT)
+                .at(Point.of(-10, 0));
 
-        WidgetContainer<PushableTextLines> songInfo = this.addWidget(PushableTextLines.regular()).at(Point.of(70, -8));
+        WidgetContainer<PushableTextLines> songInfo = this.addWidget(PushableTextLines.regular())
+                .anchor(WidgetAnchor.MIDDLE_LEFT)
+                .at(Point.of(10, 0));
 
         if (song.track().isPresent()) {
             Track track = song.track().get();
 
-            songInfo.get().push(asComponent(track), Color.WHITE);
-            songInfo.get().push(asComponent(track.artist()), Color.WHITE);
+            songInfo.get().push(asComponent(track));
+            songInfo.get().push(asComponent(track.artist()));
             if (album.isPresent()) {
-                songInfo.get().push(asComponent(track.album().get()), Color.WHITE);
+                songInfo.get().push(asComponent(track.album().get()));
             }
         } else {
-            songInfo.get().push(Component.literal("No track found :("), Color.RED);
+            songInfo.get().push(Component.literal("No track found :("));
         }
 
         WidgetContainer<PauseButton> pauseButton = this

@@ -1,11 +1,9 @@
 package net.pixaurora.kitten_cube.impl.ui.widget.text;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import net.pixaurora.kitten_cube.impl.MinecraftClient;
 import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.text.Color;
@@ -15,12 +13,11 @@ import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
 import net.pixaurora.kitten_cube.impl.ui.texture.GuiTexture;
 import net.pixaurora.kitten_cube.impl.ui.tile.InnerTileGrid;
 import net.pixaurora.kitten_cube.impl.ui.tile.PositionedInnerTile;
-import net.pixaurora.kitten_cube.impl.ui.widget.IncorporealWidget;
+import net.pixaurora.kitten_cube.impl.ui.widget.Widget;
 import net.pixaurora.kitten_heart.impl.KitTunes;
+import net.pixaurora.kitten_heart.impl.util.Pair;
 
-public class PushableTextLines implements IncorporealWidget {
-    // TODO: render this from (0, 0) like everything else
-
+public class PushableTextLines implements Widget {
     private static final TextLinesBackground REGULAR_BACKGROUND = new TextLinesBackground(Point.of(7, 5),
             new InnerTileGrid(
                     GuiTexture.of(KitTunes.resource("textures/gui/sprites/widget/textbox.png"), Size.of(20, 17)),
@@ -28,48 +25,48 @@ public class PushableTextLines implements IncorporealWidget {
             Size.of(6, 2));
 
     private final Optional<TextLinesBackground> backgroundType;
+    private final List<Component> lines;
+    private Color color;
 
-    private final List<PositionedText> lines;
-    private final List<PositionedInnerTile> backgroundTiles;
+    private ImmutableTextDisplay display;
 
     public PushableTextLines(Optional<TextLinesBackground> backgroundType) {
         this.backgroundType = backgroundType;
         this.lines = new ArrayList<>();
-        this.backgroundTiles = new ArrayList<>();
+        this.color = Color.WHITE;
+        this.resetDisplay();
     }
 
     public static PushableTextLines regular() {
         return new PushableTextLines(Optional.of(REGULAR_BACKGROUND));
     }
 
-    private int height() {
-        return this.lines.size() * MinecraftClient.textHeight();
-    }
-
-    public Point endPos() {
-        return Point.ZERO.offset(0, this.height());
-    }
-
     public void clear() {
         this.lines.clear();
     }
 
-    public void push(Component text, Color color) {
-        Point newLinePos = MinecraftClient.textSize(text).centerHorizontally(Point.ZERO).offset(0, this.height());
-        this.lines.add(new PositionedText(text, color, newLinePos));
+    public void setColor(Color color) {
+        this.color = color;
+    }
 
-        this.updateBackground();
+    public void push(Component text) {
+        this.lines.add(text);
+
+        this.resetDisplay();
     }
 
     @Override
     public void draw(GuiDisplay gui, Point mousePos) {
-        for (PositionedInnerTile tile : this.backgroundTiles) {
+        for (PositionedInnerTile tile : this.display.tiles) {
             tile.draw(gui);
         }
 
-        for (PositionedText line : this.lines) {
-            gui.drawText(line.text(), line.color(), line.pos());
-        }
+        gui.drawTextBox(this.display.textBox);
+    }
+
+    @Override
+    public Size size() {
+        return this.display.size;
     }
 
     @Override
@@ -81,36 +78,43 @@ public class PushableTextLines implements IncorporealWidget {
         return false;
     }
 
-    private void updateBackground() {
-        this.backgroundTiles.clear();
-
-        TextLinesBackground background = this.backgroundType.get();
-
-        InnerTileGrid grid = background.grid();
-        Point startPos = this.topLeftLinePoint().offset(background.textStart().scaledBy(-1));
-        Size totalSize = this.linesSize().offset(background.textStart()).offset(background.bottomRightPadding());
-
-        this.backgroundTiles.addAll(grid.tilesAndSize(startPos, totalSize).first());
-    }
-
-    private Size linesSize() {
-        return MinecraftClient
-                .textSize(this.lines.stream().map(PositionedText::text).toArray(size -> new Component[size]));
-    }
-
-    private Point topLeftLinePoint() {
-        Iterator<PositionedText> lines = this.lines.iterator();
-
-        PositionedText line = lines.next();
-        Point topLeftPoint = line.pos();
-
-        while (lines.hasNext()) {
-            line = lines.next();
-
-            Point linePos = line.pos();
-            topLeftPoint = Point.of(Math.min(topLeftPoint.x(), linePos.x()), Math.min(topLeftPoint.y(), linePos.y()));
+    private void resetDisplay() {
+        Point textStart;
+        if (this.backgroundType.isPresent()) {
+            textStart = this.backgroundType.get().textStart();
+        } else {
+            textStart = Point.ZERO;
         }
 
-        return topLeftPoint;
+        TextBox textBox = TextBox.of(this.lines, color, textStart);
+        Size displaySize = textBox.size().offset(textStart);
+
+        List<PositionedInnerTile> tiles;
+        if (this.backgroundType.isPresent()) {
+            TextLinesBackground background = this.backgroundType.get();
+
+            Pair<List<PositionedInnerTile>, Size> tilesAndSize = background
+                    .grid()
+                    .tilesAndSize(Point.ZERO, displaySize.offset(background.bottomRightPadding()));
+
+            tiles = tilesAndSize.first();
+            displaySize = tilesAndSize.second();
+        } else {
+            tiles = new ArrayList<>();
+        }
+
+        this.display = new ImmutableTextDisplay(textBox, tiles, displaySize);
+    }
+
+    private static class ImmutableTextDisplay {
+        private final TextBox textBox;
+        private final List<PositionedInnerTile> tiles;
+        private final Size size;
+
+        ImmutableTextDisplay(TextBox textBox, List<PositionedInnerTile> tiles, Size size) {
+            this.textBox = textBox;
+            this.tiles = tiles;
+            this.size = size;
+        }
     }
 }

@@ -5,6 +5,7 @@ import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.text.Color;
 import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
+import net.pixaurora.kitten_cube.impl.ui.widget.text.TextBox;
 
 public class AlignedGuiDisplay extends WrappedGuiDisplay {
     private final Alignment alignment;
@@ -41,4 +42,8 @@ public class AlignedGuiDisplay extends WrappedGuiDisplay {
         super.drawTexture(path, width, height, this.alignX(x, y), this.alignY(x, y));
     }
 
+    @Override
+    public void drawTextBox(TextBox box) {
+        super.drawTextBox(box, this.alignment, this.window);
+    }
 }

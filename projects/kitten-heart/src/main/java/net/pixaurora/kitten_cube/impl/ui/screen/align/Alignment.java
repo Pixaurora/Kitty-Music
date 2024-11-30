@@ -17,10 +17,23 @@ public interface Alignment {
 
     public int inverseAlignY(int x, int y, Size window);
 
-    public default Point inverseAlign(Point pos, Size window) {
-        int x = pos.x();
-        int y = pos.y();
+    public default int alignX(Point pos, Size window) {
+        return this.alignX(pos.x(), pos.y(), window);
+    }
 
-        return Point.of(this.inverseAlignX(x, y, window), this.inverseAlignY(x, y, window));
+    public default int alignY(Point pos, Size window) {
+        return this.alignY(pos.x(), pos.y(), window);
+    }
+
+    public default int inverseAlignX(Point pos, Size window) {
+        return this.inverseAlignX(pos.x(), pos.y(), window);
+    }
+
+    public default int inverseAlignY(Point pos, Size window) {
+        return this.inverseAlignY(pos.x(), pos.y(), window);
+    }
+
+    public default Point inverseAlign(Point pos, Size window) {
+        return Point.of(this.inverseAlignX(pos, window), this.inverseAlignY(pos, window));
     }
 }

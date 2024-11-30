@@ -98,11 +98,11 @@ public class ProgressBar implements Widget {
 
     private void createTiles0(int progressWidth, int barWidth,
             ProgressBarTileSet tileSet, TilePlacementMethod tileMethod) {
-        int middleTileCount = (barWidth - (tileSet.left().size().width() + tileSet.right().size().width()))
-                / tileSet.middle().size().width();
+        int middleTileCount = (barWidth - (tileSet.left().width() + tileSet.right().width()))
+                / tileSet.middle().width();
 
         this.size = Size.of(
-                tileSet.left().height() + middleTileCount * tileSet.middle().height() + tileSet.right().width(),
+                tileSet.left().width() + middleTileCount * tileSet.middle().width() + tileSet.right().width(),
                 tileSet.left().height());
 
         Point placement = Point.ZERO;

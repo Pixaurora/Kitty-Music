@@ -7,9 +7,11 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.pixaurora.kit_tunes.api.resource.ResourcePath;
 import net.pixaurora.kitten_cube.impl.MinecraftClient;
+import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.text.Color;
 import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
+import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.TextBox;
 import net.pixaurora.kitten_square.impl.ui.ConversionCacheImpl;
 import net.pixaurora.kitten_square.impl.ui.widget.TextBoxImpl;
@@ -44,20 +46,20 @@ public class GuiDisplayImpl implements GuiDisplay {
 
     @SuppressWarnings("resource")
     @Override
-    public void drawTextBox(TextBox textBox) {
-        if (textBox instanceof TextBoxImpl) {
-            TextBoxImpl impl = (TextBoxImpl) textBox;
-
-            int y = impl.startPos.y();
-
-            for (FormattedCharSequence line : impl.lines) {
-                GuiComponent.drawString(poseStack, Minecraft.getInstance().font, line, impl.startPos.x(), y,
-                        impl.color.hex());
-
-                y += MinecraftClient.textHeight();
-            }
-        } else {
+    public void drawTextBox(TextBox textBox, Alignment alignment, Size window) {
+        if (!(textBox instanceof TextBoxImpl)) {
             throw new UnsupportedOperationException("Unsupported instance of textbox");
+        }
+
+        TextBoxImpl impl = (TextBoxImpl) textBox;
+
+        int x = alignment.alignX(impl.startPos, window);
+        int y = alignment.alignY(impl.startPos, window);
+
+        for (FormattedCharSequence line : impl.lines) {
+            GuiComponent.drawString(poseStack, Minecraft.getInstance().font, line, x, y, impl.color.hex());
+
+            y += MinecraftClient.textHeight();
         }
     }
 }

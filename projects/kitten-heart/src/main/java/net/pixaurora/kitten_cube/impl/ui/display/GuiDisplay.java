@@ -5,6 +5,7 @@ import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.text.Color;
 import net.pixaurora.kitten_cube.impl.text.Component;
+import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
 import net.pixaurora.kitten_cube.impl.ui.texture.GuiTexture;
 import net.pixaurora.kitten_cube.impl.ui.texture.Texture;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.TextBox;
@@ -17,7 +18,11 @@ public interface GuiDisplay {
 
     public void drawText(Component text, Color color, int x, int y, boolean shadowed);
 
-    public void drawTextBox(TextBox box);
+    public void drawTextBox(TextBox box, Alignment alignment, Size window);
+
+    public default void drawTextBox(TextBox box) {
+        this.drawTextBox(box, Alignment.TOP_LEFT, Size.ZERO);
+    }
 
     public default void drawTexture(ResourcePath path, Size size, Point pos) {
         this.drawTexture(path, size.width(), size.height(), pos.x(), pos.y());
