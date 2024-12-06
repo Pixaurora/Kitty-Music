@@ -18,7 +18,8 @@ import net.pixaurora.kitten_heart.impl.music.history.ListenHistory;
 import net.pixaurora.kitten_heart.impl.music.metadata.MusicMetadata;
 import net.pixaurora.kitten_heart.impl.music.metadata.MusicMetadataLoader;
 import net.pixaurora.kitten_heart.impl.resource.ResourcePathImpl;
-import net.pixaurora.kitten_heart.impl.service.MinecraftUICompat;
+import net.pixaurora.kitten_heart.impl.service.UICompat;
+import net.pixaurora.kitten_heart.impl.service.MusicCompat;
 import net.pixaurora.kitten_heart.impl.service.ServiceLoading;
 import net.pixaurora.catculator.impl.Catculator;
 
@@ -40,7 +41,9 @@ public class KitTunes {
     public static ConfigManager<ScrobblerCache> SCROBBLER_CACHE;
     public static ConfigManager<ListenHistory> LISTEN_HISTORY;
 
-    public static final MinecraftUICompat UI_LAYER = ServiceLoading.loadJustOneOrThrow(MinecraftUICompat.class);
+    public static final UICompat UI_LAYER = ServiceLoading.loadJustOneOrThrow(UICompat.class);
+
+    public static final MusicCompat MUSIC_LAYER = ServiceLoading.loadJustOneOrThrow(MusicCompat.class);
 
     public static final List<MusicEventListener> MUSIC_LISTENERS = ServiceLoading.loadAll(MusicEventListener.class);
 

@@ -26,9 +26,11 @@ import net.pixaurora.kitten_heart.impl.music.progress.PlayingSong;
 import net.pixaurora.kitten_heart.impl.ui.screen.KitTunesScreenTemplate;
 import net.pixaurora.kitten_heart.impl.ui.widget.PauseButton;
 import net.pixaurora.kitten_heart.impl.ui.widget.Timer;
+import net.pixaurora.kitten_heart.impl.ui.widget.progress.MusicCooldownProgress;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressBar;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressBarTileSet;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressBarTileSets;
+import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressProvider;
 
 import static net.pixaurora.kitten_heart.impl.music.metadata.MusicMetadata.asComponent;
 
@@ -89,18 +91,8 @@ public class MusicScreen extends KitTunesScreenTemplate {
                 Point.ZERO, Size.of(4, 4), Point.of(4, 0), Size.of(4, 4), Point.of(8, 0), Size.of(4, 4));
     }
 
-    private static interface DisplayMode {
-        boolean isActive();
-
-        void cleanup();
-    }
-
     public DisplayMode createMusicDisplay(PlayingSong song) {
-        WidgetContainer<ProgressBar> progressBar = this
-                .addWidget(new ProgressBar(song, PLAYING_SONG_TILE_SET))
-                .align(Alignment.CENTER_BOTTOM)
-                .at(Point.of(0, -24))
-                .anchor(WidgetAnchor.TOP_MIDDLE);
+        WidgetContainer<ProgressBar> progressBar = this.configProgressBar(song, PLAYING_SONG_TILE_SET);
 
         WidgetContainer<Timer> timer = this.addWidget(new Timer(song))
                 .align(progressBar.relativeTo(WidgetAnchor.BOTTOM_MIDDLE))
@@ -155,40 +147,58 @@ public class MusicScreen extends KitTunesScreenTemplate {
     }
 
     public DisplayMode createWaitingDisplay() {
-        return new WaitingDisplayMode();
+        ProgressProvider progress = new MusicCooldownProgress();
+
+        WidgetContainer<ProgressBar> progressBar = this.configProgressBar(progress, PLAYING_SONG_TILE_SET);
+
+        return new WaitingDisplayMode(Arrays.asList(progressBar));
     }
 
-    private class MusicDisplayMode implements DisplayMode {
-        private final PlayingSong song;
+    private WidgetContainer<ProgressBar> configProgressBar(ProgressProvider progress, ProgressBarTileSets tileSets) {
+        return this.addWidget(new ProgressBar(progress, tileSets))
+                .align(Alignment.CENTER_BOTTOM)
+                .at(Point.of(0, -24))
+                .anchor(WidgetAnchor.TOP_MIDDLE);
+    }
+
+    private abstract class DisplayMode {
         private final List<WidgetContainer<?>> widgets;
 
-        MusicDisplayMode(PlayingSong song, List<WidgetContainer<?>> widgets) {
-            this.song = song;
+        public DisplayMode(List<WidgetContainer<?>> widgets) {
             this.widgets = widgets;
         }
 
-        @Override
-        public boolean isActive() {
-            return EventHandling.isTracking(song.progress());
-        }
+        abstract boolean isActive();
 
-        @Override
-        public void cleanup() {
+        void cleanup() {
             for (WidgetContainer<?> widget : this.widgets) {
                 MusicScreen.this.removeWidget(widget);
             }
         }
     }
 
-    private class WaitingDisplayMode implements DisplayMode {
-        @Override
-        public boolean isActive() {
-            return !EventHandling.isTrackingAnything();
+    private class MusicDisplayMode extends DisplayMode {
+        private final PlayingSong song;
+
+        MusicDisplayMode(PlayingSong song, List<WidgetContainer<?>> widgets) {
+            super(widgets);
+            this.song = song;
         }
 
         @Override
-        public void cleanup() {
+        public boolean isActive() {
+            return EventHandling.isTracking(song.progress());
+        }
+    }
 
+    private class WaitingDisplayMode extends DisplayMode {
+        WaitingDisplayMode(List<WidgetContainer<?>> widgets) {
+            super(widgets);
+        }
+
+        @Override
+        public boolean isActive() {
+            return !EventHandling.isTrackingAnything();
         }
     }
 }
