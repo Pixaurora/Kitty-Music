@@ -1,6 +1,15 @@
-name: build
+name: build-java
 
-on: [push, pull_request]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - meow
+    paths-ignore:
+      - projects/catculator/**
+  pull_request:
+    paths-ignore:
+      - projects/catculator/**
 
 jobs:
   build:

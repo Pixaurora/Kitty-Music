@@ -1,6 +1,15 @@
 name: build-natives
 
-on: [push, pull_request]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - meow
+    paths:
+      - projects/catculator/**
+  pull_request:
+    paths:
+      - projects/catculator/**
 
 jobs:
   build:
