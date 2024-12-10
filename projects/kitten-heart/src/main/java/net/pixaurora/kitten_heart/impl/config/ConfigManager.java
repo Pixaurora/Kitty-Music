@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.quiltmc.loader.api.QuiltLoader;
@@ -37,6 +38,12 @@ public class ConfigManager<T> {
     public void execute(Consumer<T> task) {
         synchronized (this) {
             task.accept(this.config);
+        }
+    }
+
+    public <G> G get(Function<T, G> getter) {
+        synchronized (this) {
+            return getter.apply(this.config);
         }
     }
 

@@ -6,24 +6,24 @@ import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.ui.texture.GuiTexture;
 import net.pixaurora.kitten_cube.impl.ui.tile.InnerTile;
-import net.pixaurora.kitten_cube.impl.ui.tile.TilePosition;
+import net.pixaurora.kitten_cube.impl.ui.tile.TileColumn;
 
 public class ProgressBarTileSet {
     private final InnerTile left;
     private final InnerTile middle;
     private final InnerTile right;
 
-    private final EnumMap<TilePosition, InnerTile> tileMap;
+    private final EnumMap<TileColumn, InnerTile> tileMap;
 
     public ProgressBarTileSet(InnerTile left, InnerTile middle, InnerTile right) {
         this.left = left;
         this.middle = middle;
         this.right = right;
-        this.tileMap = new EnumMap<>(TilePosition.class);
+        this.tileMap = new EnumMap<>(TileColumn.class);
 
-        this.tileMap.put(TilePosition.LEFT, this.left);
-        this.tileMap.put(TilePosition.MIDDLE, this.middle);
-        this.tileMap.put(TilePosition.RIGHT, this.right);
+        this.tileMap.put(TileColumn.LEFT, this.left);
+        this.tileMap.put(TileColumn.MIDDLE, this.middle);
+        this.tileMap.put(TileColumn.RIGHT, this.right);
     }
 
     public static ProgressBarTileSet create(GuiTexture texture, Point leftOffset, Size leftSize, Point middleOffset,
@@ -44,7 +44,7 @@ public class ProgressBarTileSet {
         return this.right;
     }
 
-    public InnerTile get(TilePosition tilePosition) {
+    public InnerTile get(TileColumn tilePosition) {
         return this.tileMap.get(tilePosition);
     }
 

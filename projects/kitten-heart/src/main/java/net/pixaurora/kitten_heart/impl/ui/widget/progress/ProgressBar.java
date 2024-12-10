@@ -10,7 +10,7 @@ import net.pixaurora.kitten_cube.impl.ui.controls.MouseButton;
 import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
 import net.pixaurora.kitten_cube.impl.ui.tile.InnerTile;
 import net.pixaurora.kitten_cube.impl.ui.tile.PositionedInnerTile;
-import net.pixaurora.kitten_cube.impl.ui.tile.TilePosition;
+import net.pixaurora.kitten_cube.impl.ui.tile.TileColumn;
 import net.pixaurora.kitten_cube.impl.ui.widget.Widget;
 
 public class ProgressBar implements Widget {
@@ -109,9 +109,9 @@ public class ProgressBar implements Widget {
 
         int goalX = progressWidth;
 
-        for (TilePosition tilePosition : TilePosition.values()) {
+        for (TileColumn tilePosition : TileColumn.values()) {
             InnerTile tile = tileSet.get(tilePosition);
-            int tileCount = tilePosition == TilePosition.MIDDLE ? middleTileCount : 1;
+            int tileCount = tilePosition == TileColumn.MIDDLE ? middleTileCount : 1;
 
             for (int i = 0; i < tileCount; i++) {
                 boolean startsBeforeGoal = placement.x() < goalX;

@@ -1,7 +1,5 @@
 package net.pixaurora.kitten_heart.impl.listener;
 
-import java.io.IOException;
-
 import net.pixaurora.kit_tunes.api.event.TrackEndEvent;
 import net.pixaurora.kit_tunes.api.event.TrackMiddleEvent;
 import net.pixaurora.kit_tunes.api.event.TrackStartEvent;
@@ -40,13 +38,5 @@ public class ScrobblingMusicListener implements MusicEventListener {
             return;
         }
 
-        ListenRecord record = event.record().get();
-
-        KitTunes.LISTEN_HISTORY.execute(history -> history.record(record));
-        try {
-            KitTunes.LISTEN_HISTORY.save();
-        } catch (IOException e) {
-            KitTunes.LOGGER.error("Failed to save listen history while scrobbling!", e);
-        }
     }
 }

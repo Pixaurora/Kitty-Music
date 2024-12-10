@@ -9,7 +9,6 @@ import net.pixaurora.kit_tunes.api.music.Track;
 import net.pixaurora.kit_tunes.api.resource.ResourcePath;
 import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
-import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.screen.Screen;
 import net.pixaurora.kitten_cube.impl.ui.screen.WidgetContainer;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
@@ -17,7 +16,6 @@ import net.pixaurora.kitten_cube.impl.ui.screen.align.WidgetAnchor;
 import net.pixaurora.kitten_cube.impl.ui.texture.GuiTexture;
 import net.pixaurora.kitten_cube.impl.ui.texture.Texture;
 import net.pixaurora.kitten_cube.impl.ui.widget.StaticTexture;
-import net.pixaurora.kitten_cube.impl.ui.widget.text.PushableTextLines;
 import net.pixaurora.kitten_heart.impl.EventHandling;
 import net.pixaurora.kitten_heart.impl.KitTunes;
 import net.pixaurora.kitten_heart.impl.music.control.MusicControls;
@@ -26,13 +24,12 @@ import net.pixaurora.kitten_heart.impl.music.progress.PlayingSong;
 import net.pixaurora.kitten_heart.impl.ui.screen.KitTunesScreenTemplate;
 import net.pixaurora.kitten_heart.impl.ui.widget.PauseButton;
 import net.pixaurora.kitten_heart.impl.ui.widget.Timer;
+import net.pixaurora.kitten_heart.impl.ui.widget.history.HistoryWidget;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.MusicCooldownProgress;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressBar;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressBarTileSet;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressBarTileSets;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressProvider;
-
-import static net.pixaurora.kitten_heart.impl.music.metadata.MusicMetadata.asComponent;
 
 public class MusicScreen extends KitTunesScreenTemplate {
     private static final ProgressBarTileSet FILLED_TILE_SET = tileSet(
@@ -61,6 +58,10 @@ public class MusicScreen extends KitTunesScreenTemplate {
     @Override
     protected void firstInit() {
         this.setupMode();
+
+        this.addWidget(new HistoryWidget())
+                .anchor(WidgetAnchor.MIDDLE_LEFT)
+                .at(Point.of(10, 0));
     }
 
     @Override
@@ -110,22 +111,6 @@ public class MusicScreen extends KitTunesScreenTemplate {
                 .anchor(WidgetAnchor.MIDDLE_RIGHT)
                 .at(Point.of(-10, 0));
 
-        WidgetContainer<PushableTextLines> songInfo = this.addWidget(PushableTextLines.regular())
-                .anchor(WidgetAnchor.MIDDLE_LEFT)
-                .at(Point.of(10, 0));
-
-        if (song.track().isPresent()) {
-            Track track = song.track().get();
-
-            songInfo.get().push(asComponent(track));
-            songInfo.get().push(asComponent(track.artist()));
-            if (album.isPresent()) {
-                songInfo.get().push(asComponent(track.album().get()));
-            }
-        } else {
-            songInfo.get().push(Component.literal("No track found :("));
-        }
-
         WidgetContainer<PauseButton> pauseButton = this
                 .addWidget(
                         new PauseButton(
@@ -143,7 +128,7 @@ public class MusicScreen extends KitTunesScreenTemplate {
                                 }))
                 .align(progressBar.relativeTo(WidgetAnchor.BOTTOM_LEFT));
 
-        return new MusicDisplayMode(song, Arrays.asList(progressBar, timer, albumArt, songInfo, pauseButton));
+        return new MusicDisplayMode(song, Arrays.asList(progressBar, timer, albumArt, pauseButton));
     }
 
     public DisplayMode createWaitingDisplay() {
