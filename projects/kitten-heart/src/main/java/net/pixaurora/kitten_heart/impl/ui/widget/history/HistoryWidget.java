@@ -24,12 +24,10 @@ public class HistoryWidget implements Widget {
             .of(KitTunes.resource("textures/gui/sprites/widget/music/history/background.png"), Size.of(200, 64));
 
     public static final HistoryTileSet TILE_SET = HistoryTileSet.of(BACKGROUND,
+            new HistoryTileSet.RowData(Point.of(13, 3), Size.of(16, 16), Point.of(31, 3), Point.of(31, 12)),
             Point.of(0, 0), Size.of(200, 21),
-            new HistoryTileSet.RowData(Point.of(13, 3), Size.of(16, 16), Point.of(31, 2), Point.of(31, 10)),
             Point.of(0, 21), Size.of(200, 21),
-            new HistoryTileSet.RowData(Point.of(13, 3), Size.of(16, 16), Point.of(31, 2), Point.of(31, 10)),
-            Point.of(0, 42), Size.of(200, 22),
-            new HistoryTileSet.RowData(Point.of(13, 3), Size.of(16, 16), Point.of(31, 2), Point.of(31, 10)));
+            Point.of(0, 42), Size.of(200, 22));
 
     private final HistoryTileSet tileSet = TILE_SET;
     private final AtomicReference<View> view;

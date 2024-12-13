@@ -37,14 +37,15 @@ public class HistoryTileSet {
 
     public static HistoryTileSet of(
             GuiTexture texture,
-            Point topTileOffset, Size topTileSize, RowData topData,
-            Point middleTileOffset, Size middleTileSize, RowData middleData,
-            Point bottomTileOffset, Size bottomTileSize, RowData bottomData) {
-        Row topRow = new Row(new InnerTile(texture, topTileOffset, topTileSize), topData);
+            RowData infoPlacements,
+            Point topTileOffset, Size topTileSize,
+            Point middleTileOffset, Size middleTileSize,
+            Point bottomTileOffset, Size bottomTileSize) {
+        Row topRow = new Row(new InnerTile(texture, topTileOffset, topTileSize), infoPlacements);
 
-        Row middleRow = new Row(new InnerTile(texture, middleTileOffset, middleTileSize), middleData);
+        Row middleRow = new Row(new InnerTile(texture, middleTileOffset, middleTileSize), infoPlacements);
 
-        Row bottomRow = new Row(new InnerTile(texture, bottomTileOffset, bottomTileSize), bottomData);
+        Row bottomRow = new Row(new InnerTile(texture, bottomTileOffset, bottomTileSize), infoPlacements);
 
         return new HistoryTileSet(topRow, middleRow, bottomRow);
     }
