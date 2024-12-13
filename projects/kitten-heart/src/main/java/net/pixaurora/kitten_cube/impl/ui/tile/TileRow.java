@@ -11,10 +11,10 @@ public enum TileRow {
         int first = 0;
         int last = elements.size() - 1;
 
-        if (index == first) {
-            return TileRow.TOP;
-        } else if (index == last) {
+        if (index == last) {
             return TileRow.BOTTOM;
+        } else if (index == first) {
+            return TileRow.TOP;
         } else {
             return TileRow.MIDDLE;
         }

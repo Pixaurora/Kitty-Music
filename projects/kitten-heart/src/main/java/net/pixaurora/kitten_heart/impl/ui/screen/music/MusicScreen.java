@@ -95,19 +95,16 @@ public class MusicScreen extends KitTunesScreenTemplate {
     public DisplayMode createMusicDisplay(PlayingSong song) {
         WidgetContainer<ProgressBar> progressBar = this.configProgressBar(song, PLAYING_SONG_TILE_SET);
 
-        WidgetContainer<Timer> timer = this.addWidget(new Timer(song))
-                .align(progressBar.relativeTo(WidgetAnchor.BOTTOM_MIDDLE))
-                .anchor(WidgetAnchor.TOP_MIDDLE);
+        WidgetContainer<Timer> timer = this.configTimer(song, progressBar);
 
         Optional<Album> album = song.track().flatMap(Track::album);
 
         ResourcePath albumArtTexture = album
                 .flatMap(Album::albumArtPath)
                 .orElse(DEFAULT_ALBUM_ART);
-        Size iconSize = Size.of(128, 128);
         WidgetContainer<StaticTexture> albumArt = this
                 .addWidget(
-                        new StaticTexture(Texture.of(albumArtTexture, iconSize)))
+                        new StaticTexture(Texture.of(albumArtTexture, Size.of(128, 128))))
                 .anchor(WidgetAnchor.MIDDLE_RIGHT)
                 .at(Point.of(-10, 0));
 
@@ -126,7 +123,8 @@ public class MusicScreen extends KitTunesScreenTemplate {
                                         controls.pause();
                                     }
                                 }))
-                .align(progressBar.relativeTo(WidgetAnchor.BOTTOM_LEFT));
+                .align(progressBar.relativeTo(WidgetAnchor.BOTTOM_LEFT))
+                .at(Point.of(0, 1));
 
         return new MusicDisplayMode(song, Arrays.asList(progressBar, timer, albumArt, pauseButton));
     }
@@ -136,14 +134,23 @@ public class MusicScreen extends KitTunesScreenTemplate {
 
         WidgetContainer<ProgressBar> progressBar = this.configProgressBar(progress, PLAYING_SONG_TILE_SET);
 
-        return new WaitingDisplayMode(Arrays.asList(progressBar));
+        WidgetContainer<Timer> timer = this.configTimer(progress, progressBar);
+
+        return new WaitingDisplayMode(Arrays.asList(progressBar, timer));
     }
 
     private WidgetContainer<ProgressBar> configProgressBar(ProgressProvider progress, ProgressBarTileSets tileSets) {
         return this.addWidget(new ProgressBar(progress, tileSets))
                 .align(Alignment.CENTER_BOTTOM)
-                .at(Point.of(0, -24))
+                .at(Point.of(0, -27))
                 .anchor(WidgetAnchor.TOP_MIDDLE);
+    }
+
+    private WidgetContainer<Timer> configTimer(ProgressProvider progress, WidgetContainer<?> anchoredWidget) {
+        return this.addWidget(new Timer(progress))
+                .align(anchoredWidget.relativeTo(WidgetAnchor.BOTTOM_MIDDLE))
+                .anchor(WidgetAnchor.TOP_MIDDLE)
+                .at(Point.of(0, 3));
     }
 
     private abstract class DisplayMode {

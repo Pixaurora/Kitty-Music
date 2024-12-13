@@ -75,6 +75,18 @@ public class HistoryWidget implements Widget {
         List<PositionedInnerTile> tiles = new ArrayList<>();
         Size size = Size.ZERO.withX(this.tileSet.width());
 
+        // If only 1 song has been played recently, we add an extra tile so the shape
+        // isn't cut off.
+        if (recentMusic.size() == 1) {
+            Row rowType = this.tileSet.get(TileRow.TOP);
+
+            Point pos = size.toPoint().withX(0);
+
+            tiles.add(rowType.tile().atPos(pos));
+
+            size = size.offset(0, rowType.tile().height());
+        }
+
         for (int i = 0; i < recentMusic.size(); i++) {
             ListenRecord record = recentMusic.get(recentMusic.size() - 1 - i);
             Row rowType = this.tileSet.get(TileRow.fromIndex(recentMusic, i));
