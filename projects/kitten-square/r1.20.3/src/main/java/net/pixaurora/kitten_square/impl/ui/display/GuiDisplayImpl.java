@@ -26,7 +26,7 @@ public class GuiDisplayImpl implements GuiDisplay {
 
     @Override
     public void drawTexture(ResourcePath path, int width, int height, int x, int y) {
-        this.drawGuiTextureSubsection(path, width, height, x, y, width, height, 0, 0);
+        this.graphics.blit(conversions.convert(path), x, y, 0, 0.0F, 0.0F, width, height, width, height);
     }
 
     @Override
