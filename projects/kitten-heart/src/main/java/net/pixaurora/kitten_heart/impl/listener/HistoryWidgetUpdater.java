@@ -24,8 +24,12 @@ public class HistoryWidgetUpdater implements MusicEventListener {
 
         int count = 0;
 
-        outer: for (Collection<ListenRecord> records : Arrays.asList(currentTracks(), pastTracks())) {
-            for (ListenRecord record : records) {
+        outer: for (List<ListenRecord> records : Arrays.asList(currentTracks(), pastTracks())) {
+            int lastIndex = records.size() - 1;
+
+            for (int i = 0; i < records.size(); i++) {
+                ListenRecord record = records.get(lastIndex - i);
+
                 count += 1;
 
                 recentTracks.add(record);
@@ -39,7 +43,7 @@ public class HistoryWidgetUpdater implements MusicEventListener {
         return recentTracks;
     }
 
-    private static Collection<ListenRecord> currentTracks() {
+    private static List<ListenRecord> currentTracks() {
         ArrayList<ListenRecord> currentTracks = new ArrayList<>();
 
         for (PlayingSong song : EventHandling.playingSongs()) {
@@ -53,7 +57,7 @@ public class HistoryWidgetUpdater implements MusicEventListener {
         return currentTracks;
     }
 
-    private static Collection<ListenRecord> pastTracks() {
+    private static List<ListenRecord> pastTracks() {
         return KitTunes.LISTEN_HISTORY.get(ListenHistory::getHistory);
     }
 
