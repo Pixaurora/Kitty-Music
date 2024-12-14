@@ -18,8 +18,6 @@ import net.pixaurora.kitten_heart.impl.listener.HistoryWidgetUpdater;
 import net.pixaurora.kitten_heart.impl.ui.widget.history.HistoryTileSet.Row;
 
 public class HistoryWidget implements Widget {
-    public static final int MAX_ITEMS = 10;
-
     public static final GuiTexture BACKGROUND = GuiTexture
             .of(KitTunes.resource("textures/gui/sprites/widget/music/history/background.png"), Size.of(200, 64));
 
@@ -29,26 +27,31 @@ public class HistoryWidget implements Widget {
             Point.of(0, 21), Size.of(200, 21),
             Point.of(0, 42), Size.of(200, 22));
 
+    private final int verticalPadding;
     private final HistoryTileSet tileSet = TILE_SET;
     private final AtomicReference<View> view;
+    private final AtomicReference<Size> window;
 
-    public HistoryWidget() {
-        this.view = new AtomicReference<>(this.initView());
+    public HistoryWidget(int verticalPadding) {
+        this.verticalPadding = verticalPadding;
+        this.view = new AtomicReference<>();
+        this.window = new AtomicReference<>();
+    }
+
+    @Override
+    public void onWindowUpdate(Size window) {
+        this.window.set(window);
+        this.update();
+        HistoryWidgetUpdater.LISTENING_WIDGET.set(this);
     }
 
     public void update() {
-        this.view.set(this.initView());
+        this.view.set(this.initView(HistoryWidgetUpdater.recentTracks(this.maxItems())));
     }
 
     @Override
     public void draw(GuiDisplay gui, Point mousePos) {
         this.view.get().draw(gui, mousePos);
-    }
-
-    public static List<ListenRecord> getMaxAmount() {
-        List<ListenRecord> records = new ArrayList<>();
-
-        return records;
     }
 
     @Override
@@ -65,8 +68,12 @@ public class HistoryWidget implements Widget {
         return this.view.get().size;
     }
 
-    private View initView() {
-        return this.initView(HistoryWidgetUpdater.recentTracks(MAX_ITEMS));
+    private int maxItems() {
+        int middleTilesHeight = this.window.get().height() - this.verticalPadding * 2
+                - (this.tileSet.top().tile().height() + this.tileSet.bottom().tile().height());
+        int middleEntries = middleTilesHeight / this.tileSet.middle().tile().height();
+
+        return middleEntries + 2; // Because the top and bottom were cancelled out before dividing
     }
 
     private View initView(List<ListenRecord> recentMusic) {

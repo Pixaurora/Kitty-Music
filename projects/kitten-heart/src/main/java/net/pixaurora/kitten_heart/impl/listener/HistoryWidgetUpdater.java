@@ -4,15 +4,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
+import net.pixaurora.kit_tunes.api.event.TrackEndEvent;
+import net.pixaurora.kit_tunes.api.event.TrackStartEvent;
 import net.pixaurora.kit_tunes.api.listener.MusicEventListener;
 import net.pixaurora.kit_tunes.api.music.history.ListenRecord;
 import net.pixaurora.kitten_heart.impl.EventHandling;
 import net.pixaurora.kitten_heart.impl.KitTunes;
 import net.pixaurora.kitten_heart.impl.music.history.ListenHistory;
 import net.pixaurora.kitten_heart.impl.music.progress.PlayingSong;
+import net.pixaurora.kitten_heart.impl.ui.widget.history.HistoryWidget;
 
 public class HistoryWidgetUpdater implements MusicEventListener {
+    public static final AtomicReference<HistoryWidget> LISTENING_WIDGET = new AtomicReference<>();
+
     public static List<ListenRecord> recentTracks(int limit) {
         ArrayList<ListenRecord> recentTracks = new ArrayList<>();
 
@@ -49,5 +55,23 @@ public class HistoryWidgetUpdater implements MusicEventListener {
 
     private static Collection<ListenRecord> pastTracks() {
         return KitTunes.LISTEN_HISTORY.get(ListenHistory::getHistory);
+    }
+
+    @Override
+    public void onTrackStart(TrackStartEvent event) {
+        HistoryWidget listeningWidget = LISTENING_WIDGET.get();
+
+        if (listeningWidget != null) {
+            listeningWidget.update();
+        }
+    }
+
+    @Override
+    public void onTrackEnd(TrackEndEvent event) {
+        HistoryWidget listeningWidget = LISTENING_WIDGET.get();
+
+        if (listeningWidget != null) {
+            listeningWidget.update();
+        }
     }
 }

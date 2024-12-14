@@ -59,7 +59,7 @@ public class MusicScreen extends KitTunesScreenTemplate {
     protected void firstInit() {
         this.setupMode();
 
-        this.addWidget(new HistoryWidget())
+        this.addWidget(new HistoryWidget(32))
                 .anchor(WidgetAnchor.MIDDLE_LEFT)
                 .at(Point.of(10, 0));
     }

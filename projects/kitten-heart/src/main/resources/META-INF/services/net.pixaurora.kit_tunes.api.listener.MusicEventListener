@@ -1,2 +1,3 @@
+net.pixaurora.kitten_heart.impl.listener.HistoryWidgetUpdater
 net.pixaurora.kitten_heart.impl.listener.NotificationSendingMusicListener
 net.pixaurora.kitten_heart.impl.listener.ScrobblingMusicListener
