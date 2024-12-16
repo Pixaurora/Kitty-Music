@@ -14,10 +14,6 @@ public interface BasicWidget extends Widget {
         return this.surface().isWithinBounds(pos);
     }
 
-    public default Point pos() {
-        return this.surface().pos();
-    }
-
     public default Size size() {
         return this.surface().size();
     }

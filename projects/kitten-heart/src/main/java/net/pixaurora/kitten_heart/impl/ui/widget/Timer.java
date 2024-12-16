@@ -1,23 +1,23 @@
 package net.pixaurora.kitten_heart.impl.ui.widget;
 
 import net.pixaurora.kitten_cube.impl.math.Point;
-import net.pixaurora.kitten_cube.impl.text.Color;
+import net.pixaurora.kitten_cube.impl.math.Size;
 import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.controls.MouseButton;
 import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
-import net.pixaurora.kitten_cube.impl.ui.widget.IncorporealWidget;
+import net.pixaurora.kitten_cube.impl.ui.widget.Widget;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.PushableTextLines;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressProvider;
 
-public class Timer implements IncorporealWidget {
+public class Timer implements Widget {
     private final PushableTextLines text;
     private final ProgressProvider progress;
 
     private long playedSeconds;
     private final long totalSeconds;
 
-    public Timer(Point pos, ProgressProvider progress) {
-        this.text = PushableTextLines.regular(pos);
+    public Timer(ProgressProvider progress) {
+        this.text = PushableTextLines.regular();
         this.progress = progress;
         this.playedSeconds = -1;
         this.totalSeconds = this.progress.totalDuration().getSeconds();
@@ -36,7 +36,7 @@ public class Timer implements IncorporealWidget {
             this.playedSeconds = newPlayedSeconds;
 
             this.text.clear();
-            this.text.push(Component.literal(this.display()), Color.WHITE);
+            this.text.push(Component.literal(this.display()));
         }
     }
 
@@ -73,5 +73,10 @@ public class Timer implements IncorporealWidget {
     @Override
     public boolean isWithinBounds(Point mousePos) {
         return false;
+    }
+
+    @Override
+    public Size size() {
+        return this.text.size();
     }
 }

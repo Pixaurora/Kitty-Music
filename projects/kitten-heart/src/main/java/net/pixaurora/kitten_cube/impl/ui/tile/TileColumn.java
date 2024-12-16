@@ -1,6 +1,6 @@
 package net.pixaurora.kitten_cube.impl.ui.tile;
 
-public enum TilePosition {
+public enum TileColumn {
     LEFT,
     MIDDLE,
     RIGHT

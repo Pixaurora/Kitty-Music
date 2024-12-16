@@ -10,11 +10,10 @@ import net.pixaurora.kitten_cube.impl.ui.controls.MouseButton;
 import net.pixaurora.kitten_cube.impl.ui.display.GuiDisplay;
 import net.pixaurora.kitten_cube.impl.ui.tile.InnerTile;
 import net.pixaurora.kitten_cube.impl.ui.tile.PositionedInnerTile;
-import net.pixaurora.kitten_cube.impl.ui.tile.TilePosition;
+import net.pixaurora.kitten_cube.impl.ui.tile.TileColumn;
 import net.pixaurora.kitten_cube.impl.ui.widget.Widget;
 
 public class ProgressBar implements Widget {
-    private final Point startPos;
     private final List<PositionedInnerTile> tiles;
     private Optional<Size> window;
     private int progressWidth;
@@ -22,11 +21,9 @@ public class ProgressBar implements Widget {
     private final ProgressProvider progressProvider;
     private final ProgressBarTileSets tilesets;
 
-    private Point topLeftPoint;
     private Size size;
 
-    public ProgressBar(Point startPos, ProgressProvider progressProvider, ProgressBarTileSets tilesets) {
-        this.startPos = startPos;
+    public ProgressBar(ProgressProvider progressProvider, ProgressBarTileSets tilesets) {
         this.tiles = new ArrayList<>();
         this.window = Optional.empty();
         this.progressProvider = progressProvider;
@@ -101,21 +98,20 @@ public class ProgressBar implements Widget {
 
     private void createTiles0(int progressWidth, int barWidth,
             ProgressBarTileSet tileSet, TilePlacementMethod tileMethod) {
-        int middleTileCount = (barWidth - (tileSet.left().size().width() + tileSet.right().size().width()))
-                / tileSet.middle().size().width();
+        int middleTileCount = (barWidth - (tileSet.left().width() + tileSet.right().width()))
+                / tileSet.middle().width();
 
-        this.topLeftPoint = this.startPos.offset(-barWidth / 2, 0);
         this.size = Size.of(
-                tileSet.left().height() + middleTileCount * tileSet.middle().height() + tileSet.right().width(),
+                tileSet.left().width() + middleTileCount * tileSet.middle().width() + tileSet.right().width(),
                 tileSet.left().height());
 
-        Point placement = this.topLeftPoint;
+        Point placement = Point.ZERO;
 
-        int goalX = progressWidth - barWidth / 2;
+        int goalX = progressWidth;
 
-        for (TilePosition tilePosition : TilePosition.values()) {
+        for (TileColumn tilePosition : TileColumn.values()) {
             InnerTile tile = tileSet.get(tilePosition);
-            int tileCount = tilePosition == TilePosition.MIDDLE ? middleTileCount : 1;
+            int tileCount = tilePosition == TileColumn.MIDDLE ? middleTileCount : 1;
 
             for (int i = 0; i < tileCount; i++) {
                 boolean startsBeforeGoal = placement.x() < goalX;
@@ -154,11 +150,6 @@ public class ProgressBar implements Widget {
     private static interface TilePlacementMethod {
         public Optional<PositionedInnerTile> place(InnerTile tile, Point at, int goalX, boolean startsBeforeGoal,
                 boolean endsBeforeGoal);
-    }
-
-    @Override
-    public Point pos() {
-        return this.topLeftPoint;
     }
 
     @Override

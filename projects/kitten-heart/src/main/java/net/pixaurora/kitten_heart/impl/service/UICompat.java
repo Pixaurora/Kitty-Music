@@ -14,7 +14,7 @@ import net.pixaurora.kitten_heart.impl.resource.temp.FileAccess;
  * The version-specific implementation for pieces of the UI that are organized
  * in the core of the mod.
  */
-public interface MinecraftUICompat extends SoundPlayer, TextProcessor {
+public interface UICompat extends SoundPlayer, TextProcessor {
     public void sendToast(Toast toast);
 
     public Component translatable(String key);

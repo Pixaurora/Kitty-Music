@@ -13,5 +13,9 @@ public interface TextBox {
         return KitTunes.UI_LAYER.createTextbox(lines, color, maxLineLength, pos);
     }
 
+    public static TextBox of(List<Component> lines, Color color, Point pos) {
+        return of(lines, color, 256, pos);
+    }
+
     public Size size();
 }

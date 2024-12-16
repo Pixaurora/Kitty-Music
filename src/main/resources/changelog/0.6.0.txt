@@ -1,0 +1,19 @@
+This update adds support for Minecraft 1.21.4, as well as revamping the music screen with a pause feature and a history widget!
+
+# Main Changes
+- Store natives in global cache directory (by @Pixaurora)
+- Add a play/pause button so you can pause your music (by @Pixaurora)
+- Send scrobble events at 66% listen time instead of when the track ends (by @Pixaurora)
+- Show the music cooldown on the Music Screen (by @Pixaurora)
+- Add History Widget (by @Pixaurora)
+- Re-do the layout of the Music Screen so everything is fully on screen (by @Pixaurora)
+
+# Misc Changes
+- Add a minimal native HTTP client (by @LostLuma)
+- Run workflows only if matching files were changed (by @LostLuma)
+- Store Listen History (by @Pixaurora)
+- Clean up Scrobbler and Rendering code to make future improvements easier (by @Pixaurora)
+
+# Natives Changes
+- Add support for Risc-V on Linux (by @Pixaurora, @LostLuma)
+

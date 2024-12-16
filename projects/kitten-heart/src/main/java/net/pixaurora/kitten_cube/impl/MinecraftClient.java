@@ -9,10 +9,10 @@ import net.pixaurora.kitten_cube.impl.ui.screen.Screen;
 import net.pixaurora.kitten_cube.impl.ui.sound.Sound;
 import net.pixaurora.kitten_heart.impl.KitTunes;
 import net.pixaurora.kitten_heart.impl.resource.temp.FileAccess;
-import net.pixaurora.kitten_heart.impl.service.MinecraftUICompat;
+import net.pixaurora.kitten_heart.impl.service.UICompat;
 
 public final class MinecraftClient {
-    private static MinecraftUICompat impl() {
+    private static UICompat impl() {
         return KitTunes.UI_LAYER;
     }
 

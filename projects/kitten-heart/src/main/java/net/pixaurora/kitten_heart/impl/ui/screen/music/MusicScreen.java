@@ -9,17 +9,13 @@ import net.pixaurora.kit_tunes.api.music.Track;
 import net.pixaurora.kit_tunes.api.resource.ResourcePath;
 import net.pixaurora.kitten_cube.impl.math.Point;
 import net.pixaurora.kitten_cube.impl.math.Size;
-import net.pixaurora.kitten_cube.impl.text.Color;
-import net.pixaurora.kitten_cube.impl.text.Component;
 import net.pixaurora.kitten_cube.impl.ui.screen.Screen;
 import net.pixaurora.kitten_cube.impl.ui.screen.WidgetContainer;
-import net.pixaurora.kitten_cube.impl.ui.screen.WidgetContainer.AlignedToCorner;
 import net.pixaurora.kitten_cube.impl.ui.screen.align.Alignment;
-import net.pixaurora.kitten_cube.impl.ui.screen.align.AlignmentStrategy;
+import net.pixaurora.kitten_cube.impl.ui.screen.align.WidgetAnchor;
 import net.pixaurora.kitten_cube.impl.ui.texture.GuiTexture;
 import net.pixaurora.kitten_cube.impl.ui.texture.Texture;
 import net.pixaurora.kitten_cube.impl.ui.widget.StaticTexture;
-import net.pixaurora.kitten_cube.impl.ui.widget.text.PushableTextLines;
 import net.pixaurora.kitten_heart.impl.EventHandling;
 import net.pixaurora.kitten_heart.impl.KitTunes;
 import net.pixaurora.kitten_heart.impl.music.control.MusicControls;
@@ -28,11 +24,12 @@ import net.pixaurora.kitten_heart.impl.music.progress.PlayingSong;
 import net.pixaurora.kitten_heart.impl.ui.screen.KitTunesScreenTemplate;
 import net.pixaurora.kitten_heart.impl.ui.widget.PauseButton;
 import net.pixaurora.kitten_heart.impl.ui.widget.Timer;
+import net.pixaurora.kitten_heart.impl.ui.widget.history.HistoryWidget;
+import net.pixaurora.kitten_heart.impl.ui.widget.progress.MusicCooldownProgress;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressBar;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressBarTileSet;
 import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressBarTileSets;
-
-import static net.pixaurora.kitten_heart.impl.music.metadata.MusicMetadata.asComponent;
+import net.pixaurora.kitten_heart.impl.ui.widget.progress.ProgressProvider;
 
 public class MusicScreen extends KitTunesScreenTemplate {
     private static final ProgressBarTileSet FILLED_TILE_SET = tileSet(
@@ -54,13 +51,17 @@ public class MusicScreen extends KitTunesScreenTemplate {
     }
 
     @Override
-    protected AlignmentStrategy alignmentMethod() {
+    protected Alignment alignmentMethod() {
         return Alignment.CENTER;
     }
 
     @Override
     protected void firstInit() {
         this.setupMode();
+
+        this.addWidget(new HistoryWidget(32))
+                .anchor(WidgetAnchor.MIDDLE_LEFT)
+                .at(Point.of(10, 0));
     }
 
     @Override
@@ -91,43 +92,21 @@ public class MusicScreen extends KitTunesScreenTemplate {
                 Point.ZERO, Size.of(4, 4), Point.of(4, 0), Size.of(4, 4), Point.of(8, 0), Size.of(4, 4));
     }
 
-    private static interface DisplayMode {
-        boolean isActive();
-
-        void cleanup();
-    }
-
     public DisplayMode createMusicDisplay(PlayingSong song) {
-        WidgetContainer<ProgressBar> progressBar = this
-                .addWidget(new ProgressBar(Point.of(0, -24), song, PLAYING_SONG_TILE_SET))
-                .customizedAlignment(Alignment.CENTER_BOTTOM);
+        WidgetContainer<ProgressBar> progressBar = this.configProgressBar(song, PLAYING_SONG_TILE_SET);
 
-        WidgetContainer<Timer> timer = this.addWidget(new Timer(Point.of(0, -13), song))
-                .customizedAlignment(Alignment.CENTER_BOTTOM);
+        WidgetContainer<Timer> timer = this.configTimer(song, progressBar);
 
         Optional<Album> album = song.track().flatMap(Track::album);
 
         ResourcePath albumArtTexture = album
                 .flatMap(Album::albumArtPath)
                 .orElse(DEFAULT_ALBUM_ART);
-        Size iconSize = Size.of(128, 128);
         WidgetContainer<StaticTexture> albumArt = this
                 .addWidget(
-                        new StaticTexture(Texture.of(albumArtTexture, iconSize), iconSize.centerOn(Point.of(-70, 0))));
-
-        WidgetContainer<PushableTextLines> songInfo = this.addWidget(PushableTextLines.regular(Point.of(70, -8)));
-
-        if (song.track().isPresent()) {
-            Track track = song.track().get();
-
-            songInfo.get().push(asComponent(track), Color.WHITE);
-            songInfo.get().push(asComponent(track.artist()), Color.WHITE);
-            if (album.isPresent()) {
-                songInfo.get().push(asComponent(track.album().get()), Color.WHITE);
-            }
-        } else {
-            songInfo.get().push(Component.literal("No track found :("), Color.RED);
-        }
+                        new StaticTexture(Texture.of(albumArtTexture, Size.of(128, 128))))
+                .anchor(WidgetAnchor.MIDDLE_RIGHT)
+                .at(Point.of(-10, 0));
 
         WidgetContainer<PauseButton> pauseButton = this
                 .addWidget(
@@ -143,48 +122,75 @@ public class MusicScreen extends KitTunesScreenTemplate {
                                     } else if (state == PlaybackState.PLAYING) {
                                         controls.pause();
                                     }
-                                },
-                                Point.of(0, 0)))
-                .customizedAlignment(progressBar.relativeAlignment(AlignedToCorner.BOTTOM_LEFT));
+                                }))
+                .align(progressBar.relativeTo(WidgetAnchor.BOTTOM_LEFT))
+                .at(Point.of(0, 1));
 
-        return new MusicDisplayMode(song, Arrays.asList(progressBar, timer, albumArt, songInfo, pauseButton));
+        return new MusicDisplayMode(song, Arrays.asList(progressBar, timer, albumArt, pauseButton));
     }
 
     public DisplayMode createWaitingDisplay() {
-        return new WaitingDisplayMode();
+        ProgressProvider progress = new MusicCooldownProgress();
+
+        WidgetContainer<ProgressBar> progressBar = this.configProgressBar(progress, PLAYING_SONG_TILE_SET);
+
+        WidgetContainer<Timer> timer = this.configTimer(progress, progressBar);
+
+        return new WaitingDisplayMode(Arrays.asList(progressBar, timer));
     }
 
-    private class MusicDisplayMode implements DisplayMode {
-        private final PlayingSong song;
+    private WidgetContainer<ProgressBar> configProgressBar(ProgressProvider progress, ProgressBarTileSets tileSets) {
+        return this.addWidget(new ProgressBar(progress, tileSets))
+                .align(Alignment.CENTER_BOTTOM)
+                .at(Point.of(0, -27))
+                .anchor(WidgetAnchor.TOP_MIDDLE);
+    }
+
+    private WidgetContainer<Timer> configTimer(ProgressProvider progress, WidgetContainer<?> anchoredWidget) {
+        return this.addWidget(new Timer(progress))
+                .align(anchoredWidget.relativeTo(WidgetAnchor.BOTTOM_MIDDLE))
+                .anchor(WidgetAnchor.TOP_MIDDLE)
+                .at(Point.of(0, 3));
+    }
+
+    private abstract class DisplayMode {
         private final List<WidgetContainer<?>> widgets;
 
-        MusicDisplayMode(PlayingSong song, List<WidgetContainer<?>> widgets) {
-            this.song = song;
+        public DisplayMode(List<WidgetContainer<?>> widgets) {
             this.widgets = widgets;
         }
 
-        @Override
-        public boolean isActive() {
-            return EventHandling.isTracking(song.progress());
-        }
+        abstract boolean isActive();
 
-        @Override
-        public void cleanup() {
+        void cleanup() {
             for (WidgetContainer<?> widget : this.widgets) {
                 MusicScreen.this.removeWidget(widget);
             }
         }
     }
 
-    private class WaitingDisplayMode implements DisplayMode {
-        @Override
-        public boolean isActive() {
-            return !EventHandling.isTrackingAnything();
+    private class MusicDisplayMode extends DisplayMode {
+        private final PlayingSong song;
+
+        MusicDisplayMode(PlayingSong song, List<WidgetContainer<?>> widgets) {
+            super(widgets);
+            this.song = song;
         }
 
         @Override
-        public void cleanup() {
+        public boolean isActive() {
+            return EventHandling.isTracking(song.progress());
+        }
+    }
 
+    private class WaitingDisplayMode extends DisplayMode {
+        WaitingDisplayMode(List<WidgetContainer<?>> widgets) {
+            super(widgets);
+        }
+
+        @Override
+        public boolean isActive() {
+            return !EventHandling.isTrackingAnything();
         }
     }
 }

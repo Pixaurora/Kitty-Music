@@ -25,26 +25,26 @@ public class RectangularButton implements Button {
 
     private boolean isDisabled;
 
-    public RectangularButton(ButtonBackground background, Point pos, Component text, ClickEvent action) {
+    public RectangularButton(ButtonBackground background, Component text, ClickEvent action) {
         this.background = background;
-        this.surface = RectangularSurface.of(pos, background.size());
+        this.surface = RectangularSurface.of(background.size());
         this.text = text;
         this.action = action;
 
         Size textSize = MinecraftClient.textSize(text);
 
-        this.textPos = pos.offset(background.size().centerWithinSelf(textSize));
+        this.textPos = background.size().centerWithinSelf(textSize);
         this.isDisabled = false;
     }
 
-    public static RectangularButton vanillaButton(Point pos, Component text, ClickEvent action) {
-        return new RectangularButton(ButtonBackground.NEUTRAL_RECTANGLE, pos, text, action);
+    public static RectangularButton vanillaButton(Component text, ClickEvent action) {
+        return new RectangularButton(ButtonBackground.NEUTRAL_RECTANGLE, text, action);
     }
 
     @Override
     public void draw(GuiDisplay gui, Point mousePos) {
         GuiTexture background = this.background.texture(this.isDisabled, this.surface.isWithinBounds(mousePos));
-        gui.drawGui(background, this.surface.pos());
+        gui.drawGui(background, Point.ZERO);
 
         gui.drawText(this.text, Color.WHITE, this.textPos);
     }

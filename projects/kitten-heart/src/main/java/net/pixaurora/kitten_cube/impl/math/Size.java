@@ -1,6 +1,8 @@
 package net.pixaurora.kitten_cube.impl.math;
 
 public interface Size extends Vec2Int {
+    public static Size ZERO = Size.of(0, 0);
+
     public static Size of(int width, int height) {
         return new SizeImpl(width, height);
     }

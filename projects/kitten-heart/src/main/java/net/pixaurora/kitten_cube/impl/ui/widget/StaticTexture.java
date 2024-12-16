@@ -16,13 +16,13 @@ public class StaticTexture implements BasicWidget {
         this.surface = surface;
     }
 
-    public StaticTexture(Texture icon, Point pos) {
-        this(icon, RectangularSurface.of(pos, icon.size()));
+    public StaticTexture(Texture icon) {
+        this(icon, RectangularSurface.of(icon.size()));
     }
 
     @Override
     public void draw(GuiDisplay gui, Point mousePos) {
-        gui.draw(this.texture, this.surface.pos());
+        gui.draw(this.texture, Point.ZERO);
     }
 
     public WidgetSurface surface() {

@@ -17,6 +17,7 @@ import net.pixaurora.kit_tunes.api.event.TrackStartEvent;
 import net.pixaurora.kit_tunes.api.listener.MusicEventListener;
 import net.pixaurora.kit_tunes.api.music.ListeningProgress;
 import net.pixaurora.kit_tunes.api.music.Track;
+import net.pixaurora.kit_tunes.api.music.history.ListenRecord;
 import net.pixaurora.kit_tunes.api.resource.ResourcePath;
 import net.pixaurora.kitten_cube.impl.MinecraftClient;
 import net.pixaurora.kitten_heart.impl.error.UnhandledKitTunesException;
@@ -52,7 +53,24 @@ public class EventHandling {
     private static void handleTrackEnd(PlayingSong song) {
         TrackEndEvent event = new TrackEventImpl(song);
 
+        recordTrack(event);
+
         processEvent(listener -> listener.onTrackEnd(event));
+    }
+
+    private static void recordTrack(TrackEndEvent event) {
+        if (!event.record().isPresent()) {
+            return;
+        }
+
+        ListenRecord record = event.record().get();
+
+        KitTunes.LISTEN_HISTORY.execute(history -> history.record(record));
+        try {
+            KitTunes.LISTEN_HISTORY.save();
+        } catch (IOException e) {
+            KitTunes.LOGGER.error("Failed to save listen history while scrobbling!", e);
+        }
     }
 
     public static void init() {

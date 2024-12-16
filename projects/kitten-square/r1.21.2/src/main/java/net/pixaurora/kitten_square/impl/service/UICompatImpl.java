@@ -18,7 +18,7 @@ import net.pixaurora.kitten_cube.impl.ui.sound.Sound;
 import net.pixaurora.kitten_cube.impl.ui.widget.text.TextBox;
 import net.pixaurora.kitten_heart.impl.resource.ResourcePathUtils;
 import net.pixaurora.kitten_heart.impl.resource.temp.FileAccess;
-import net.pixaurora.kitten_heart.impl.service.MinecraftUICompat;
+import net.pixaurora.kitten_heart.impl.service.UICompat;
 import net.pixaurora.kitten_square.impl.FakeComponent;
 import net.pixaurora.kitten_square.impl.SoundUtil;
 import net.pixaurora.kitten_square.impl.ui.screen.MinecraftScreen;
@@ -26,7 +26,7 @@ import net.pixaurora.kitten_square.impl.ui.screen.ScreenImpl;
 import net.pixaurora.kitten_square.impl.ui.toast.ToastImpl;
 import net.pixaurora.kitten_square.impl.ui.widget.TextBoxImpl;
 
-public class UICompatImpl implements MinecraftUICompat {
+public class UICompatImpl implements UICompat {
     private final Minecraft client = Minecraft.getInstance();
 
     public static ResourceLocation internalToMinecraftType(ResourcePath path) {
