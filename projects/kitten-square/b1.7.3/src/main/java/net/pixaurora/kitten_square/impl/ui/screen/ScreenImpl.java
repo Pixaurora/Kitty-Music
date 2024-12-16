@@ -31,7 +31,6 @@ public class ScreenImpl extends net.minecraft.client.gui.screen.Screen {
 
     @Override
     public void render(int mouseX, int mouseY, float delta) {
-        this.renderBackground();
         super.render(mouseX, mouseY, delta);
 
         GuiDisplay display = new GuiDisplayImpl(this, this.conversions);
