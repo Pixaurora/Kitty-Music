@@ -23,6 +23,7 @@ import net.pixaurora.kitten_square.impl.MusicDirectory;
 import net.pixaurora.kitten_square.impl.SoundUtil;
 import net.pixaurora.kitten_square.impl.ui.screen.MinecraftScreen;
 import net.pixaurora.kitten_square.impl.ui.screen.ScreenImpl;
+import net.pixaurora.kitten_square.impl.ui.toast.ToastManager;
 import net.pixaurora.kitten_square.impl.ui.widget.TextBoxImpl;
 
 public class UICompatImpl implements UICompat {
@@ -48,8 +49,7 @@ public class UICompatImpl implements UICompat {
 
     @Override
     public void sendToast(net.pixaurora.kitten_cube.impl.ui.toast.Toast toast) {
-        // TODO: Actually send toasts
-        // this.client.getToasts().addToast(new ToastImpl(toast));
+        ToastManager.INSTANCE.queueToast(toast);
     }
 
     @Override

@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [ ],
   "client": [
-    "GameGuiMixin"
+    "GameGuiMixin",
+    "MinecraftMixin",
+    "ToastGuiMixin"
   ],
   "injectors": {
     "defaultRequire": 1
