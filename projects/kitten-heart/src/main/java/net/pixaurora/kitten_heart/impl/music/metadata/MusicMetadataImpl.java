@@ -74,7 +74,7 @@ public class MusicMetadataImpl implements MusicMetadataService, MutableMusicMeta
 
     @Override
     public Optional<Track> matchTrack(ResourcePath soundPath) {
-        String[] splitPath = soundPath.representation().split("/");
+        String[] splitPath = soundPath.path().split("/");
         String filename = splitPath[splitPath.length - 1];
 
         int lastFullStop = filename.lastIndexOf(".");

@@ -12,11 +12,16 @@ repositories {
         name = "Fabric"
         url = uri("https://maven.fabricmc.net/")
     }
+    maven {
+        name = "Ornithe Releases"
+        url = uri("https://maven.ornithemc.net/releases")
+    }
     gradlePluginPortal()
 }
 
 dependencies {
     implementation(libs.quilt.loom)
+    implementation(libs.ploceus)
 
     implementation(libs.gson)
 

@@ -1,6 +1,6 @@
 plugins {
     id("kit_tunes.java.16")
-    id("kit_tunes.submodule")
+    id("kit_tunes.modern_submodule")
 }
 
 mod {

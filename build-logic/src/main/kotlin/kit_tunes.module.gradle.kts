@@ -19,6 +19,5 @@ loom {
 dependencies {
     modImplementation(libs.quilt.loader)
 
-    mappings(loom.officialMojangMappings())
     minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
 }
