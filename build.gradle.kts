@@ -43,6 +43,7 @@ tasks.withType<Jar> {
 }
 
 val modVersion = project.property("mod_version").toString()
+val publishVersions = project.property("publish_versions").toString()
 val updateTitle = project.property("update_title").toString().uppercaseFirstChar()
 
 fun getVersionType(): ReleaseType {
@@ -52,6 +53,16 @@ fun getVersionType(): ReleaseType {
         ReleaseType.BETA;
     } else {
         ReleaseType.STABLE;
+    }
+}
+
+fun isSnapshotVersion(version: String): Boolean {
+    return if (version.startsWith("a") || version.startsWith("b")) {
+        true // Alpha and Beta versions
+    } else if (version.contains("-") || version.contains("w")) {
+        true // Pre-releases, Release Candidates, Snapshots, etc. ...
+    } else {
+        false
     }
 }
 
@@ -77,9 +88,21 @@ publishMods {
         accessToken = providers.environmentVariable("MODRINTH_SECRET")
         projectId = "AVOKl7hB"
 
-        minecraftVersionRange {
-            start = project.property("publish_version_min").toString()
-            end = project.property("publish_version_max").toString()
+        publishVersions.split(",").forEach {
+            val parts = it.split("-")
+
+            if (parts.size != 2) {
+                throw RuntimeException("Invalid version range ${it}.")
+            }
+
+            val a = parts[0]
+            val b = parts[1]
+
+            minecraftVersionRange {
+                start = a
+                end = b
+                includeSnapshots = isSnapshotVersion(a) || isSnapshotVersion(b)
+            }
         }
 
         optional("fabric-api", "qsl", "modmenu")
