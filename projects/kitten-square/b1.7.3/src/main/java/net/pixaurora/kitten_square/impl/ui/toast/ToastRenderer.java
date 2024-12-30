@@ -11,7 +11,7 @@ import net.pixaurora.kitten_cube.impl.ui.screen.align.WindowOffsetAlignment;
 import net.pixaurora.kitten_cube.impl.ui.toast.Toast;
 
 public class ToastRenderer extends GuiElement {
-    private static final long ENTER_LENGTH = Duration.ofSeconds(1).toMillis();
+    private static final long ENTER_LENGTH = Duration.ofMillis(600L).toMillis();
     private static final long EXIT_LENGTH = ENTER_LENGTH;
 
     private final Toast toast;
@@ -27,7 +27,7 @@ public class ToastRenderer extends GuiElement {
     public ToastRenderer(Toast toast, int offsetY) {
         this.toast = toast;
         this.offsetY = offsetY;
-        this.millisecondsShown = toast.timeShown().toMillis() + Duration.ofSeconds(2).toMillis();
+        this.millisecondsShown = toast.timeShown().toMillis() + ENTER_LENGTH + EXIT_LENGTH;
         this.alignment = new ToastAlignment();
     }
 
@@ -65,8 +65,8 @@ public class ToastRenderer extends GuiElement {
 
             if (timeRendered < ENTER_LENGTH) {
                 return animationOffset0(ENTER_LENGTH, timeRendered);
-            } else if (timeRendered > EXIT_LENGTH + this.toast().millisecondsShown) {
-                long animationTime = Math.min(this.toast().millisecondsShown - timeRendered, 0);
+            } else if (timeRendered > this.toast().millisecondsShown - EXIT_LENGTH) {
+                long animationTime = Math.max(this.toast().millisecondsShown - timeRendered, 0);
                 return animationOffset0(EXIT_LENGTH, animationTime);
             } else {
                 return 0;

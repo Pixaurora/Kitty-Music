@@ -3,6 +3,7 @@ package net.pixaurora.kitten_square.impl.ui.display;
 import org.lwjgl.opengl.GL11;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.terraformersmc.modmenu.util.DrawingUtil;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
@@ -44,6 +45,7 @@ public class GuiDisplayImpl implements GuiDisplay {
 
         BufferBuilder bufferBuilder = BufferBuilder.INSTANCE;
         bufferBuilder.start();
+        bufferBuilder.color(255, 255, 255, 255);
         bufferBuilder.vertex(x, y + subsectionHeight, 0.0, u * invertedTexWidth,
                 (v + (float) subsectionHeight) * invertedTexHeight);
         bufferBuilder.vertex(x + subsectionWidth, y + subsectionHeight, 0.0,

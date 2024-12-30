@@ -15,7 +15,7 @@ public class MinecraftMixin {
     private Size scaledWindow(int width, int height) {
         Window window = new Window(((Minecraft) (Object) this).options, width, height);
 
-        return Size.of(window.getHeight(), window.getWidth());
+        return Size.of(window.getWidth(), window.getHeight());
     }
 
     @Inject(method = "init", at = @At("TAIL"))

@@ -47,7 +47,7 @@ public class ToastManager extends GuiElement {
     }
 
     private void addNewRenderers() {
-        this.unseenToasts.removeIf((unseenToast) -> {
+        this.unseenToasts.removeIf(unseenToast -> {
             int height = this.height();
 
             if (height > MAX_HEIGHT) {
