@@ -12,7 +12,7 @@ annotations = "13.0"
 gson = "2.8.0"
 slf4j = "2.0.13"
 
-mod_publish = "0.7.4"
+mod_publish = "0.8.4"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
