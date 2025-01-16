@@ -2,7 +2,6 @@ package net.pixaurora.kitten_heart.impl.listener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
